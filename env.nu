@@ -1,4 +1,4 @@
-#pNushell Environment Config File
+# Nushell Environment Config File
 #
 # version = 0.80.0
 
@@ -45,7 +45,7 @@ def create_right_prompt [] {
 
 # Use nushell functions to define your right and left prompt
 #let-env PROMPT_COMMAND = {|| create_left_prompt }
-let-env PROMPT_COMMAND = {|| oh-my-posh prompt print primary --config ~/.poshprompts/emodipt-extend.omp.json }
+let-env PROMPT_COMMAND = {|| oh-my-posh prompt print primary --config ~/.config/posh/prompts/ursadipt.omp.json }
 let-env PROMPT_COMMAND_RIGHT = {|| }
 
 # The prompt indicators are environmental variables that represent

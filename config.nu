@@ -212,10 +212,10 @@ let-env config = {
     help_banner: true
     exit_esc: true
 
-    command_bar_text: '#C4C9C6'
+    command_bar_text: 'foreground'
     # command_bar: {fg: '#C4C9C6' bg: '#223311' }
 
-    status_bar_background: {fg: '#1D1F21' bg: '#C4C9C6' }
+    status_bar_background: {fg: 'background' bg: 'foreground' }
     # status_bar_text: {fg: '#C4C9C6' bg: '#223311' }
 
     highlight: {bg: 'yellow' fg: 'black' }
@@ -234,7 +234,7 @@ let-env config = {
     }
 
     table: {
-      split_line: '#404040'
+      split_line: dark_gray
 
       cursor: true
 
@@ -300,7 +300,7 @@ let-env config = {
   bracketed_paste: true # enable bracketed paste, currently useless on windows
   edit_mode: vi # emacs, vi
   shell_integration: true # enables terminal markers and a workaround to arrow keys stop working issue
-  render_right_prompt_on_last_line: true # true or false to enable or disable right prompt to be rendered on last line of the prompt.
+  render_right_prompt_on_last_line: false # true or false to enable or disable right prompt to be rendered on last line of the prompt.
 
   hooks: {
     pre_prompt: [{||
@@ -563,7 +563,10 @@ source ~/.config/nushell/zoxide.nu
 # ------------------------------------------------------------------------------
 # rsp: iykyk
 # -----
-use ~/prj/rspn/defrspn.nu rsp rspsk
+use ~/prj/rspn/defrspn.nu rsp
+use ~/prj/rspn/defrspn.nu rspsk
 
 # -----------------------------------------------------------------------------
+use ~/.config/nushell/alias_candy.nu candy
+
 source ~/.config/nushell/aliases.nu
