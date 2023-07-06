@@ -571,7 +571,7 @@ let ssh_keys = [
 let ssh_prefix = ([ $env.HOME ".ssh" ] | path join)
 let fix_keys = ($ssh_keys | par-each { |key| [$ssh_prefix $key] | path join })
 let stringschema = "id_USERID-at-SERVICE_YUBIDESIGNATION_KEYTYPE_SOURCEID"
-keychain --quiet --eval --confhost --query --agents ssh,gpg | lines -s | parse '{varname}={varval}' | transpose -i -r -d | load-env
+keychain --quiet --confhost --query --agents ssh,gpg | lines -s | parse '{varname}={varval}' | transpose -i -r -d | load-env
 $fix_keys | each { |key| keychain --quiet $key }
 # $gpg_keys | par-each { |key| keychain $key }
 
