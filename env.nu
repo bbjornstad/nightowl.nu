@@ -77,7 +77,8 @@ let-env ENV_CONVERSIONS = {
 #
 # By default, <nushell-config-dir>/scripts is added
 let-env NU_LIB_DIRS = [
-    ($nu.default-config-dir | path join 'nu_scripts')
+    ($nu.default-config-dir | path join 'nu_scripts' 'custom-completions'
+    'auto-generate' 'completions')
 ]
 
 # Directories to search for plugin binaries when calling register
@@ -96,12 +97,6 @@ let-env NU_PLUGIN_DIRS = [
 # folder with corresponding source in pieces in typical linux fashion.
 #let pathstr = ([$env.HOME, "/.config/nushell/env.nu.d/*.nu"] | str join)
 #ls $pathstr | get name | each {|e| source $e }
-
-# get the baseline externals from the configuration nu_scripts that we
-# downloaded from the nushell github user. In particular, this is a submodule in
-# our general dotfiles setup, for compartmentalization purposes
-#use ($env.default-config-dir
-#     | path join 'nu_scripts' 'custom-completions' 'autogenerate' 'completions') *
 
 # define the dotcandyd systems home folder here. this is used in the nushell
 # configuration definition of the candy cli
