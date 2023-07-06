@@ -178,9 +178,9 @@ let light_theme = {
 }
 
 # External completer example
-# let carapace_completer = {|spans|
-#     carapace $spans.0 nushell $spans | from json
-# }
+let carapace_completer = {|spans|
+    carapace $spans.0 nushell $spans | from json
+}
 
 
 # The default config record. This is where much of your global configuration is setup.
@@ -266,10 +266,10 @@ let-env config = {
   }
 
   history: {
-    max_size: 10000 # Session has to be reloaded for this to take effect
-    sync_on_enter: true # Enable to share history between multiple sessions, else you have to close the session to write history to file
+    max_size: 100 # Session has to be reloaded for this to take effect
+    sync_on_enter: false # Enable to share history between multiple sessions, else you have to close the session to write history to file
     file_format: "plaintext" # "sqlite" or "plaintext"
-    history_isolation: true # true enables history isolation, false disables it. true will allow the history to be isolated to the current session. false will allow the history to be shared across all sessions.
+    isolation: true # true enables history isolation, false disables it. true will allow the history to be isolated to the current session. false will allow the history to be shared across all sessions.
   }
   completions: {
     case_sensitive: false # set to true to enable case-sensitive completions
@@ -279,7 +279,7 @@ let-env config = {
     external: {
       enable: true # set to false to prevent nushell looking into $env.PATH to find more suggestions, `false` recommended for WSL users as this look up my be very slow
       max_results: 100 # setting it lower can improve completion performance at the cost of omitting some options
-      completer: null # check 'carapace_completer' above as an example
+      completer: $carapace_completer # check 'carapace_completer' above as an example
     }
   }
   filesize: {
@@ -553,8 +553,33 @@ let-env config = {
 # script is generated from the installation command of atuin itself---check on
 # updates as needed.
 # -----
-source ~/.local/share/atuin/init.nu
+# source ~/.local/share/atuin/init.nu
 
+# -----------------------------------------------------------------------------
+# This is for the keychain realization of ssh-agents...this is to prevent the
+# need to keep readding any ssh keys on each connect.
+#
+# More can be read at the following link:
+# https://www.funtoo.org/Funtoo:Keychain
+# -----------------------------------------------------------------------------
+
+# let ssh_prefix = ([ $env.HOME ".ssh" ] | path join)
+let ssh_keys = [
+  "hosts/eta.amalthea.rsp/id_ursa-eta_ybkyA-primary_ed25519-sk_ursa-amalthea-rsp"
+  "hosts/github.com/id_bbjornstad-at-github_ybkyA-primary_ed25519-sk_ursa-major-at-ursa-amalthea-rsp"
+]
+let ssh_prefix = ([ $env.HOME ".ssh" ] | path join)
+let fix_keys = ($ssh_keys | par-each { |key| [$ssh_prefix $key] | path join })
+let stringschema = "id_USERID-at-SERVICE_YUBIDESIGNATION_KEYTYPE_SOURCEID"
+keychain --quiet --eval --confhost --query --agents ssh,gpg | lines -s | parse '{varname}={varval}' | transpose -i -r -d | load-env
+$fix_keys | each { |key| keychain --quiet $key }
+# $gpg_keys | par-each { |key| keychain $key }
+
+# -----------------------------------------------------------------------------
+# get the baseline externals from the configuration nu_scripts that we
+# downloaded from the nushell github user. In particular, this is a submodule in
+# our general dotfiles setup, for compartmentalization purposes
+# export use completions *
 # -----------------------------------------------------------------------------
 # correctly set up zoxide for nushell integration
 # -----

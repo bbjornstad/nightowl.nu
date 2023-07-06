@@ -53,7 +53,7 @@ export alias eet = sudo pacman -Rns
 # ------------------------------------------------------------------------------
 # changing the binding of the man command to point directly to batman instead of
 # man. This is to facilitate colorizing the man commands output.
-export alias man = batman
+# export alias man = nvim
 
 # ------------------------------------------------------------------------------
 # correctly set up the replacements for the following commands, to more sensible
