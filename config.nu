@@ -310,6 +310,8 @@ let-env config = {
       let direnv = (direnv export json | from json)
       let direnv = if ($direnv | length) == 1 { $direnv } else { {} }
       $direnv | load-env
+
+      let-env BW_SESSION = (bw unlock --raw --passwordenv "RSP_URSA_MAJOR_AUTHKEY")
     }]
     pre_execution: [{||
       null  # replace with source code to run before the repl input is run
@@ -549,39 +551,29 @@ let-env config = {
   ]
 }
 # -----------------------------------------------------------------------------
-# The following initializes the atuin history tool with default settings. This
 # script is generated from the installation command of atuin itself---check on
+# The following initializes the atuin history tool with default settings. This
 # updates as needed.
 # -----
 # source ~/.local/share/atuin/init.nu
 
-# -----------------------------------------------------------------------------
+# KEY-----------------------------------------------------------------------------
 # This is for the keychain realization of ssh-agents...this is to prevent the
 # need to keep readding any ssh keys on each connect.
 #
 # More can be read at the following link:
 # https://www.funtoo.org/Funtoo:Keychain
 # -----------------------------------------------------------------------------
-
-# let ssh_prefix = ([ $env.HOME ".ssh" ] | path join)
-let ssh_keys = [
-  "hosts/eta.amalthea.rsp/id_ursa-eta_ybkyA-primary_ed25519-sk_ursa-amalthea-rsp"
-  "hosts/github.com/id_bbjornstad-at-github_ybkyA-primary_ed25519-sk_ursa-major-at-ursa-amalthea-rsp"
-]
-let ssh_prefix = ([ $env.HOME ".ssh" ] | path join)
-let fix_keys = ($ssh_keys | par-each { |key| [$ssh_prefix $key] | path join })
-let stringschema = "id_USERID-at-SERVICE_YUBIDESIGNATION_KEYTYPE_SOURCEID"
-keychain --quiet --confhost --query --agents ssh,gpg | lines -s | parse '{varname}={varval}' | transpose -i -r -d | load-env
-$fix_keys | each { |key| keychain --quiet $key }
-# $gpg_keys | par-each { |key| keychain $key }
+source ~/.config/nushell/keychain.nu
 
 # -----------------------------------------------------------------------------
-# get the baseline externals from the configuration nu_scripts that we
-# downloaded from the nushell github user. In particular, this is a submodule in
-# our general dotfiles setup, for compartmentalization purposes
-# export use completions *
+# Zoxide: Autojump Manager
+#         Zoxide is a modern-age replacement for the cd command, which provides
+#         history, frecency, etc. as a more efficient method of changing
+#         directories on the command line.
 # -----------------------------------------------------------------------------
 # correctly set up zoxide for nushell integration
+# this is provided by nushell
 # -----
 source ~/.config/nushell/zoxide.nu
 
@@ -595,3 +587,4 @@ use ~/prj/rspn/defrspn.nu rspsk
 use ~/.config/nushell/alias_candy.nu candy
 
 source ~/.config/nushell/aliases.nu
+
