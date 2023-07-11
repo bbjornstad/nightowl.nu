@@ -1,3 +1,4 @@
+# vim: set ft=nu ts=2 sts=2 sw=2 et:
 #!/usr/bin/env nu
 
 # ------------------------------------------------------------------------------
@@ -7,3 +8,12 @@
 # the aliases.
 # -----
 export alias candy = git --git-dir $env.DOTCANDYD_USER_HOME --work-tree $env.HOME
+
+# -----------------------------------------------------------------------------
+# set up an alias that can unlock our bw cli tool as needed. This authentication
+# token is very dangerous if exposed...keep it safe in .envrc.secrets, but by
+# being an alias, the evaluation is deferred until the value is strictly
+# necessary, and not when this file gets compiled (which is before the envrc
+# hooks)
+# -----
+export alias bw-unlock = bw unlock --raw --passwordenv "RSP_URSA_MAJOR_AUTHKEY"

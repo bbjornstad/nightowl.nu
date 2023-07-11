@@ -182,6 +182,7 @@ let carapace_completer = {|spans|
     carapace $spans.0 nushell $spans | from json
 }
 
+use ~/.config/nushell/alias_candy.nu bw-unlock
 
 # The default config record. This is where much of your global configuration is setup.
 let-env config = {
@@ -311,7 +312,7 @@ let-env config = {
       let direnv = if ($direnv | length) == 1 { $direnv } else { {} }
       $direnv | load-env
 
-      let-env BW_SESSION = (bw unlock --raw --passwordenv "RSP_URSA_MAJOR_AUTHKEY")
+      let-env BW_SESSION = (bw-unlock)
     }]
     pre_execution: [{||
       null  # replace with source code to run before the repl input is run

@@ -88,16 +88,6 @@ let-env NU_PLUGIN_DIRS = [
     ($nu.default-config-dir | path join 'plugins')
 ]
 
-# To add entries to PATH (on Windows you might use Path), you can use the following pattern:
-# let-env PATH = ($env.PATH | split row (char esep) | prepend '/some/path')
-
-
-# ────────────────────────────────────────────────────────────-----------------
-# User configurations can go below here. This is mostly defining the env.nu.d
-# folder with corresponding source in pieces in typical linux fashion.
-#let pathstr = ([$env.HOME, "/.config/nushell/env.nu.d/*.nu"] | str join)
-#ls $pathstr | get name | each {|e| source $e }
-
 # define the dotcandyd systems home folder here. this is used in the nushell
 # configuration definition of the candy cli
 let-env DOTCANDYD_USER_HOME = ($env.HOME | path join ".candy.d")
