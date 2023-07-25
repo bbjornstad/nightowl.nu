@@ -1,12 +1,33 @@
+#!/usr/bin/env nu
 # vim: set ft=nu ts=2 sts=2 shiftwidth=2 tw=80:
-# Nushell Config File
-#
-# version = 0.80.1
 
+
+# Nushell Config File
+# ==============================================================================
+#
+
+# +----------------------------------------------------------------------------+
+# | Configuration: Nushell
+# |    a shell for a new era.
+# |
+# | each section below defines a particular configuration for the nushell
+# | it should be noted that I use nushell as a login shell, which has some
+# | important implications to consider. That setting is not specified here,
+# | though, as it must set within the system-configuration files, not nushell.
+# +----------------------------------------------------------------------------+
+
+# ------------------------------------------------------------------------------
+# Section::Themes:
+#    This section defines the possible selections of theme that can be used in
+#    nushell. Mostly, we use a dark theme for consistency across applications
+#    and to keep eye-strain down, but these are just the default themes given by
+#    nushell and includes a light version too.
+#
 # For more information on defining custom themes, see
 # https://www.nushell.sh/book/coloring_and_theming.html
 # And here is the theme collection
 # https://github.com/nushell/nu_scripts/tree/main/themes
+# -----
 let dark_theme = {
     # color for nushell primitives
     separator: white
@@ -182,9 +203,11 @@ let carapace_completer = {|spans|
     carapace $spans.0 nushell $spans | from json
 }
 
-use ~/.config/nushell/alias_candy.nu bw-unlock
-
-# The default config record. This is where much of your global configuration is setup.
+# Section::Config:
+# ------------------------------------------------------------------------------
+#    The default configuration section for nushell. This defines all of the
+#    parameters for the shell initialization and setup of specific
+#    customizations.
 let-env config = {
   # true or false to enable or disable the welcome banner at startup
   show_banner: false
@@ -311,8 +334,6 @@ let-env config = {
       let direnv = (direnv export json | from json)
       let direnv = if ($direnv | length) == 1 { $direnv } else { {} }
       $direnv | load-env
-
-      let-env BW_SESSION = (bw-unlock)
     }]
     pre_execution: [{||
       null  # replace with source code to run before the repl input is run
@@ -386,7 +407,7 @@ let-env config = {
       {
         name: commands_menu
         only_buffer_difference: false
-        marker: "# "
+        marker: "/ "
         type: {
             layout: columnar
             columns: 4
@@ -407,7 +428,7 @@ let-env config = {
       {
         name: vars_menu
         only_buffer_difference: true
-        marker: "# "
+        marker: "$ "
         type: {
             layout: list
             page_size: 10
@@ -427,7 +448,7 @@ let-env config = {
       {
         name: commands_with_description
         only_buffer_difference: true
-        marker: "# "
+        marker: "/ "
         type: {
             layout: description
             columns: 4
@@ -551,41 +572,55 @@ let-env config = {
     }
   ]
 }
+
+# ------------------------------------------------------------------------------
+# Section: User Customization
+#    typically we want to write these in external files and import them during
+#    the evaluation of this config.nu
+
 # -----------------------------------------------------------------------------
-# script is generated from the installation command of atuin itself---check on
+# Section::atuin:
 # The following initializes the atuin history tool with default settings. This
 # updates as needed.
 # -----
 # source ~/.local/share/atuin/init.nu
 
-# KEY-----------------------------------------------------------------------------
-# This is for the keychain realization of ssh-agents...this is to prevent the
-# need to keep readding any ssh keys on each connect.
-#
-# More can be read at the following link:
-# https://www.funtoo.org/Funtoo:Keychain
 # -----------------------------------------------------------------------------
-source ~/.config/nushell/keychain.nu
-
-# -----------------------------------------------------------------------------
-# Zoxide: Autojump Manager
-#         Zoxide is a modern-age replacement for the cd command, which provides
-#         history, frecency, etc. as a more efficient method of changing
-#         directories on the command line.
-# -----------------------------------------------------------------------------
-# correctly set up zoxide for nushell integration
-# this is provided by nushell
+# Section::Zoxide: Autojump Manager
+#    Zoxide is a modern-age replacement for the cd command, which provides
+#    history, frecency, etc. as a more efficient method of changing directories
+#    on the command line.
 # -----
+# this is provided by nushell
 source ~/.config/nushell/zoxide.nu
 
 # ------------------------------------------------------------------------------
-# rsp: iykyk
+# Section::RSP:
+#    iykyk
 # -----
 use ~/prj/rspn/defrspn.nu rsp
 use ~/prj/rspn/defrspn.nu rspsk
 
-# -----------------------------------------------------------------------------
-use ~/.config/nushell/alias_candy.nu candy
+# ------------------------------------------------------------------------------
+# Section::SSH-WrapKeygen:
+# -----
+# this is written so that I can stop having to remember or remind myself of the
+# specific pattern that I like to use while making ssh keys, both for the
+# application string, and for the name of the generated files as well.
+# use ~/.config/nushell/keygen.nu genkey-ssh
 
+# -----------------------------------------------------------------------------
+# Section::dotcandyd:
+# -----
+# these are some of the more important definitions that we need to make sure are
+# present in the shell. They define the candy alias, which is what I use to
+# manage my system configuration. The first is a simple alias to the required
+# call to git, the second is a custom-command defined as a wrapper around a call
+# to the external git tool
+use ~/.config/nushell/alias_candy.nu candy
+use ~/.config/nushell/alias_candy.nu nucandy
+
+# ------------------------------------------------------------------------------
+#
 source ~/.config/nushell/aliases.nu
 
