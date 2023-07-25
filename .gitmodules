@@ -1,3 +1,6 @@
 [submodule "nu_scripts"]
 	path = nu_scripts
 	url = https://github.com/nushell/nu_scripts.git
+[submodule "lib/nu_scripts"]
+	path = lib/nu_scripts
+	url = https://github.com/nushell/nu_scripts
