@@ -1,7 +1,26 @@
-# Nushell Environment Config File
-#
-# version = 0.80.0
+#!/usr/bin/env nu
+# vim: set ft=nu ts=2 sts=2 shiftwidth=2 tw=80:
 
+
+# ------------------------------------------------------------------------------
+# Nushell Environment Config File
+# version = 0.80.0
+# ------------------------------------------------------------------------------
+# env.nu:
+#     Setting up the nushell environment: this configuration file is run BEFORE
+#     the config.nu file that is adjacent to this one. This means it is possible
+#     to add definitions prior to when the final config.nu file is parsed and
+#     evaluated by the shell.
+#
+#     This file is mostly used to define environment variables using the let-env
+#     syntax. Technically though, we can import other files if needed?
+# ----------
+# ------------------------------------------------------------------------------
+# Section::Prompt:
+#     the following section defines the commands that are used to generate the
+#     prompt when using nushell on the terminal
+#
+#     As such, adjustments can be made here.
 def create_left_prompt [] {
     mut home = ""
     try {
@@ -43,8 +62,17 @@ def create_right_prompt [] {
     ([$last_exit_code, (char space), $time_segment] | str join)
 }
 
-# Use nushell functions to define your right and left prompt
-#let-env PROMPT_COMMAND = {|| create_left_prompt }
+
+
+# ------------------------------------------------------------------------------
+# Section::PromptAssignments:
+#     the following assings defined prompts to the left or right sides of the
+#     terminal, where the prompts are allowed to appear.
+#
+#     In this case, we are not using any of the definitions above, and instead
+#     overwriting the left-prompt to use Oh-My-Posh, a framework for shell
+#     configuration and theming. Because Oh-My-Posh is fully-featured already,
+#     we don't need to assign any other prompts to the left or right sides here.
 let-env PROMPT_COMMAND = {|| oh-my-posh prompt print primary --config ~/.config/posh/prompts/ursadipt.omp.json }
 let-env PROMPT_COMMAND_RIGHT = {|| }
 
@@ -58,6 +86,13 @@ let-env PROMPT_INDICATOR_VI_INSERT = {|| }
 let-env PROMPT_INDICATOR_VI_NORMAL = {|| }
 let-env PROMPT_MULTILINE_INDICATOR = {|| }
 
+#-------------------------------------------------------------------------------
+# Section::ConvertEnvironment:
+#     the following section defines how nushell should "translate" environment
+#     variables into a nushell-compatible format. Because data types are much
+#     more rigid in nushell than other shells, conversions can help reduce some
+#     boilerplate/room for human error.
+# -----
 # Specifies how environment variables are:
 # - converted from a string to a value on Nushell startup (from_string)
 # - converted from a value back to a string when running external commands (to_string)
@@ -73,25 +108,44 @@ let-env ENV_CONVERSIONS = {
   }
 }
 
-# Directories to search for scripts when calling source or use
-#
-# By default, <nushell-config-dir>/scripts is added
+# ------------------------------------------------------------------------------
+# Section::PATH:
+#     this section updates the configuration to know where to look for external
+#     libraries, binaries, or scripts. In other words, directories to search for
+#     scripts when calling source or use By default,
+#     <nushell-config-dir>/scripts is added
+# -----
+let lib_base = ($nu.default-config-dir | path join "lib")
 let-env NU_LIB_DIRS = [
-    ($nu.default-config-dir | path join 'nu_scripts' 'custom-completions'
-    'auto-generate' 'completions')
+  $lib_base
 ]
+let nu_scripts_base = ($lib_base | path join "nu_scripts")
+let autogen = (
+  [$nu_scripts_base "custom_completions" "auto-generate" "completions"]
+  | path join)
 
+let-env NU_LIB_DIRS = ($env.NU_LIB_DIRS | prepend [$autogen $nu_scripts_base])
 # Directories to search for plugin binaries when calling register
-#
+
 # By default, <nushell-config-dir>/plugins is added
+let plug_base = ($nu.default-config-dir | path join "plugins")
 let-env NU_PLUGIN_DIRS = [
-    ($nu.default-config-dir | path join 'plugins')
+  $plug_base
 ]
 
-# define the dotcandyd systems home folder here. this is used in the nushell
+# ------------------------------------------------------------------------------
+# Section::UserCustomization:
+#   this section of the file handles importation/management of certain kinds of environment
+#   variables, namely related to any sort of arguments whe've recently
+# define the dotcandyd systems home folder here. this is used in the nushell by
+# default and for those who use this program, I would recommend it strongly.
 # configuration definition of the candy cli
 let-env DOTCANDYD_USER_HOME = ($env.HOME | path join ".candy.d")
 
 # correctly setup zoxide for nushell
 # -----
 zoxide init nushell | save -f ~/.config/nushell/zoxide.nu
+
+# fix tty for gpg issues
+let-env GPG_TTY = (tty)
+
