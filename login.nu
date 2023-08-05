@@ -16,4 +16,3 @@
 # -----
 source ~/.config/nushell/keychain.nu
 
-

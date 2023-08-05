@@ -208,7 +208,7 @@ let carapace_completer = {|spans|
 #    The default configuration section for nushell. This defines all of the
 #    parameters for the shell initialization and setup of specific
 #    customizations.
-let-env config = {
+$env.config = {
   # true or false to enable or disable the welcome banner at startup
   show_banner: false
   ls: {
@@ -330,7 +330,7 @@ let-env config = {
     pre_prompt: [{||
       # need to set the format to be empty in order to stop the display on
       # terminal start.
-      let-env DIRENV_LOG_FORMAT = ""
+      $env.DIRENV_LOG_FORMAT = ""
       let direnv = (direnv export json | from json)
       let direnv = if ($direnv | length) == 1 { $direnv } else { {} }
       $direnv | load-env
@@ -592,7 +592,7 @@ let-env config = {
 #    on the command line.
 # -----
 # this is provided by nushell
-source ~/.config/nushell/zoxide.nu
+# source ~/.config/nushell/zoxide.nu
 
 # ------------------------------------------------------------------------------
 # Section::RSP:
@@ -619,6 +619,13 @@ use ~/prj/rspn/defrspn.nu rspsk
 # to the external git tool
 use ~/.config/nushell/alias_candy.nu candy
 use ~/.config/nushell/alias_candy.nu nucandy
+
+# ------------------------------------------------------------------------------
+# Section::keychain access
+# -----
+# this file defines the behavior for the keychain program, which handles
+# ssh connections, gpg signing keys, etc. for easy use by the end-user (me).
+source ~/.config/nushell/keychain.nu
 
 # ------------------------------------------------------------------------------
 #

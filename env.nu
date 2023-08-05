@@ -73,18 +73,18 @@ def create_right_prompt [] {
 #     overwriting the left-prompt to use Oh-My-Posh, a framework for shell
 #     configuration and theming. Because Oh-My-Posh is fully-featured already,
 #     we don't need to assign any other prompts to the left or right sides here.
-let-env PROMPT_COMMAND = {|| oh-my-posh prompt print primary --config ~/.config/posh/prompts/ursadipt.omp.json }
-let-env PROMPT_COMMAND_RIGHT = {|| }
+$env.PROMPT_COMMAND = {|| oh-my-posh prompt print primary --config ~/.config/posh/prompts/ursadipt.omp.json }
+$env.PROMPT_COMMAND_RIGHT = {|| }
 
 # The prompt indicators are environmental variables that represent
 # the state of the prompt
 # ---
 # overridden to allow the oh-my-posh settings to fully control the prompt
 # display
-let-env PROMPT_INDICATOR = {|| }
-let-env PROMPT_INDICATOR_VI_INSERT = {|| }
-let-env PROMPT_INDICATOR_VI_NORMAL = {|| }
-let-env PROMPT_MULTILINE_INDICATOR = {|| }
+$env.PROMPT_INDICATOR = {|| }
+$env.PROMPT_INDICATOR_VI_INSERT = {|| }
+$env.PROMPT_INDICATOR_VI_NORMAL = {|| }
+$env.PROMPT_MULTILINE_INDICATOR = {|| }
 
 #-------------------------------------------------------------------------------
 # Section::ConvertEnvironment:
@@ -97,7 +97,7 @@ let-env PROMPT_MULTILINE_INDICATOR = {|| }
 # - converted from a string to a value on Nushell startup (from_string)
 # - converted from a value back to a string when running external commands (to_string)
 # Note: The conversions happen *after* config.nu is loaded
-let-env ENV_CONVERSIONS = {
+$env.ENV_CONVERSIONS = {
   "PATH": {
     from_string: { |s| $s | split row (char esep) | path expand --no-symlink }
     to_string: { |v| $v | path expand --no-symlink | str join (char esep) }
@@ -116,7 +116,7 @@ let-env ENV_CONVERSIONS = {
 #     <nushell-config-dir>/scripts is added
 # -----
 let lib_base = ($nu.default-config-dir | path join "lib")
-let-env NU_LIB_DIRS = [
+$env.NU_LIB_DIRS = [
   $lib_base
 ]
 let nu_scripts_base = ($lib_base | path join "nu_scripts")
@@ -124,12 +124,12 @@ let autogen = (
   [$nu_scripts_base "custom_completions" "auto-generate" "completions"]
   | path join)
 
-let-env NU_LIB_DIRS = ($env.NU_LIB_DIRS | prepend [$autogen $nu_scripts_base])
+$env.NU_LIB_DIRS = ($env.NU_LIB_DIRS | prepend [$autogen $nu_scripts_base])
 # Directories to search for plugin binaries when calling register
 
 # By default, <nushell-config-dir>/plugins is added
 let plug_base = ($nu.default-config-dir | path join "plugins")
-let-env NU_PLUGIN_DIRS = [
+$env.NU_PLUGIN_DIRS = [
   $plug_base
 ]
 
@@ -140,12 +140,12 @@ let-env NU_PLUGIN_DIRS = [
 # define the dotcandyd systems home folder here. this is used in the nushell by
 # default and for those who use this program, I would recommend it strongly.
 # configuration definition of the candy cli
-let-env DOTCANDYD_USER_HOME = ($env.HOME | path join ".candy.d")
+$env.DOTCANDYD_USER_HOME = ($env.HOME | path join ".candy.d")
 
 # correctly setup zoxide for nushell
 # -----
 zoxide init nushell | save -f ~/.config/nushell/zoxide.nu
 
 # fix tty for gpg issues
-let-env GPG_TTY = (tty)
+$env.GPG_TTY = (tty)
 
