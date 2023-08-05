@@ -34,10 +34,11 @@ let keys = [ $gpg_keys.ybkyA_primary $ssh_keys.eta $ssh_keys.github $ssh_keys.co
 #
 # Most of this is directly from Keychain's own manual entries, but some of it I
 # had to piece together since many people are not aware of how good this can be.
-keychain --inherit "any-once" --agents "gpg,ssh" --systemd --eval $keys
+keychain --quiet --inherit "any-once" --agents "gpg,ssh" --systemd --eval $keys
   | lines -s
   | parse '{varname}={varval}; export {extravarname}' #; export {varname};'
   | select varname varval
-  | transpose -i -r -d
+  | transpose -r
+  | into record
   | load-env
 
