@@ -8,6 +8,10 @@ export alias vim = nvim
 # export alias less = nvimpager
 
 # ------------------------------------------------------------------------------
+# aliases for file managers.
+export alias nnn = with-env { MANPAGER: bat } { nnn }
+
+# ------------------------------------------------------------------------------
 # hyprland specific aliases:
 # - restart waybar with a SIGUSR2 signal.
 export alias wayedit = killall -SIGUSR2 waybar

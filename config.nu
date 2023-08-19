@@ -631,3 +631,5 @@ source ~/.config/nushell/keychain.nu
 #
 source ~/.config/nushell/aliases.nu
 
+
+source /home/ursa-major/.config/broot/launcher/nushell/br
