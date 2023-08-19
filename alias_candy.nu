@@ -8,6 +8,7 @@
 # the aliases.
 # -----
 export alias candy = git --git-dir $env.DOTCANDYD_USER_HOME --work-tree $env.HOME
+export alias wonka = gitui --directory $env.DOTCANDYD_USER_HOME --workdir $env.HOME
 
 export def-env nucandy [
   --git-dir (-g): path,               # path to directory holding dotcandyd bare repository
@@ -21,7 +22,7 @@ export def-env nucandy [
   }
   mut worktree = $env.HOME
   if ($work_tree != null) {
-    $worktree = $env.HOME
+    $worktree = $work_tree
   }
   mut full_paths = ($pathspec | str join " ")
   if ($full_paths in ["" " " null]) {
@@ -30,4 +31,20 @@ export def-env nucandy [
 
   ^git --git-dir $dircandy --work-tree $worktree $subcommand (
     $pathspec | str join " ")
+}
+
+export def-env nuwonka [
+  --git-dir (-g): path,           # path to directory holding dotcandyd repositoryy
+  --work-tree (-w): path,         # path to directory at root of files that should be tracked
+  ...additional_options
+] {
+  mut dircandy = $env.DOTCANDYD_USER_HOME
+  if ($git_dir != null) {
+    $dircandy = $git_dir
+  }
+  mut worktree = $env.HOME
+  if ($work_tree != null) {
+    $work_tree = $worktree
+  }
+  ^gitui --directory $dircandy --workdir $worktree
 }
