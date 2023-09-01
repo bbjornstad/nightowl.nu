@@ -2,6 +2,16 @@
 # vim: set ft=nu ts=2 sts=2 shiftwidth=2 tw=80:
 
 # ------------------------------------------------------------------------------
+# Testing Something:
+# -----
+# A necessary step for most GPG enabled workflows is to make sure that the
+# GPG_TTY environment variable is set correctly to the current tty. This should
+# occur before the need for any gpg-agent, and therefore should maybe go right
+# here? directly before? the only thing is this is login.nu...might present
+# issues?
+# $env.GPG_TTY = (tty)
+
+# ------------------------------------------------------------------------------
 # Login.nu
 #     this file defines the behavior that nushell should inherit when the
 #     program is initialized.

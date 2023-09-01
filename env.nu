@@ -146,6 +146,3 @@ $env.DOTCANDYD_USER_HOME = ($env.HOME | path join ".candy.d")
 # -----
 zoxide init nushell | save -f ~/.config/nushell/zoxide.nu
 
-# fix tty for gpg issues
-$env.GPG_TTY = (tty)
-
