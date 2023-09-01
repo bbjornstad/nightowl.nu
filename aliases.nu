@@ -1,5 +1,5 @@
-# vim: set ft=nu:
 #!/usr/bin/env nu
+# vim: set ft=nu:
 
 # ------------------------------------------------------------------------------
 # vim aliases: make sure that we are using the correct pager in nvimpager and
@@ -69,6 +69,8 @@ export alias eet = sudo pacman -Rns
 export alias cat = bat
 export alias grep = rg
 export alias find = fd
+
+export alias cd = __zoxide_z
 
 #def-env cat [...args] {
 #  if not (which bat | is-empty) {

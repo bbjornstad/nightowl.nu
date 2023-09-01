@@ -592,7 +592,7 @@ $env.config = {
 #    on the command line.
 # -----
 # this is provided by nushell
-# source ~/.config/nushell/zoxide.nu
+source ~/.config/nushell/zoxide.nu
 
 # ------------------------------------------------------------------------------
 # Section::RSP:
@@ -625,11 +625,22 @@ use ~/.config/nushell/alias_candy.nu nucandy
 # -----
 # this file defines the behavior for the keychain program, which handles
 # ssh connections, gpg signing keys, etc. for easy use by the end-user (me).
-source ~/.config/nushell/keychain.nu
+# source ~/.config/nushell/keychain.nu
 
 # ------------------------------------------------------------------------------
 #
 source ~/.config/nushell/aliases.nu
 
-
+# ------------------------------------------------------------------------------
+# Section::broot
+# -----
+# broot is a file manager, a nice view of a file-tree directly in the terminal
+# with a speedy ui and reasonably simple keybindings. this is supposed to hook
+# up to vim, but so far I'm not there yet.
 source /home/ursa-major/.config/broot/launcher/nushell/br
+
+# ------------------------------------------------------------------------------
+# Section::gpg fix
+# ------
+# to make gpg agent work correctly
+$env.GPG_TTY = (tty)
