@@ -1,27 +1,37 @@
 #!/usr/bin/env nu
 # vim: set ft=nu ts=2 sts=2 shiftwidth=2 tw=80:
 
-
-# Nushell Config File
 # ==============================================================================
-#
-
-# +----------------------------------------------------------------------------+
-# | Configuration: Nushell
-# |    a shell for a new era.
-# |
-# | each section below defines a particular configuration for the nushell
-# | it should be noted that I use nushell as a login shell, which has some
-# | important implications to consider. That setting is not specified here,
-# | though, as it must set within the system-configuration files, not nushell.
-# +----------------------------------------------------------------------------+
+# * Nushell ....................................................................
+#   Config File
+# ------------------------------------------------------------------------------
+# * nushell is a modern shell, written in Rust for speed, safety, and
+# efficiency, and designed from the ground-up to make moving data around and
+# between shell commands in a straightforward process
+# * This configuration file has most of the parameters that adjust behavior or
+# experience using nushell. However, one should prefer separate nu files that
+# are sourced here to create the final config,
+# * Each section below defines a particular configuration for the nushell. It
+# should be noted that I use nushell as a login shell, which has some important
+# implications to consider. That setting is not specified here, though, as it
+# must set within the system-configuration files, not nushell, e.g. by using
+# `chsh` or `usermod` to adjust the user's shell preferences. The biggest issue
+# with nushell is that it is (obviously) not POSIX-compliant, and hence some
+# commands might have unexpected behavior, if they were expecting such
+# compliance.
+# ------------------------------------------------------------------------------
 
 # ------------------------------------------------------------------------------
-# Section::Themes:
+# ** Section::Themes:
 #    This section defines the possible selections of theme that can be used in
 #    nushell. Mostly, we use a dark theme for consistency across applications
 #    and to keep eye-strain down, but these are just the default themes given by
 #    nushell and includes a light version too.
+#
+#    It should be noted that these themes namely define the coloration behavior with
+#    respect to things that should be colored in the terminal, but does not set
+#    the actual color values themselves, as those are instead handled with
+#    Wezterm
 #
 # For more information on defining custom themes, see
 # https://www.nushell.sh/book/coloring_and_theming.html
@@ -203,8 +213,8 @@ let carapace_completer = {|spans|
     carapace $spans.0 nushell $spans | from json
 }
 
-# Section::Config:
 # ------------------------------------------------------------------------------
+# ** Section::Config:
 #    The default configuration section for nushell. This defines all of the
 #    parameters for the shell initialization and setup of specific
 #    customizations.
@@ -592,6 +602,7 @@ $env.config = {
 #    on the command line.
 # -----
 # this is provided by nushell
+# source ($nu.default-config-dir | path join "zoxide.nu")
 source ~/.config/nushell/zoxide.nu
 
 # ------------------------------------------------------------------------------
@@ -599,7 +610,7 @@ source ~/.config/nushell/zoxide.nu
 #    iykyk
 # -----
 use ~/prj/rspn/defrspn.nu rsp
-use ~/prj/rspn/defrspn.nu rspsk
+use ~/prj/rspn/defrspn.nu rspff
 
 # ------------------------------------------------------------------------------
 # Section::SSH-WrapKeygen:
@@ -629,7 +640,16 @@ use ~/.config/nushell/alias_candy.nu nucandy
 
 # ------------------------------------------------------------------------------
 #
+# source ($nu.default-config-dir | path join "aliases.nu")
 source ~/.config/nushell/aliases.nu
+
+# ------------------------------------------------------------------------------
+# Section::nnn
+# -----
+# this sets up the cd-on-quit behavior for nnn, namely by defining the new,
+# correct invocation of nnn to be simply `n`.
+# source ($nu.default-config-dir | path join "nnn-quitcd.nu")
+source ~/.config/nushell/nnn-quitcd.nu
 
 # ------------------------------------------------------------------------------
 # Section::broot
