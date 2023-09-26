@@ -8,11 +8,11 @@
 # https://www.funtoo.org/Funtoo:Keychain
 # -----
 let gpg_keys = {
-  ybkyA_primary: "CD01BB70B6B8B88F"
+  ybkyA_primary: "837F634242488FFB"
 }
 
 # explicitly enumerate the keys used for SSH here. the format should be host:
-# identity-file as a string, relative to the .ssh directory.
+# identity-file as a string, relative to the user ~/.ssh directory.
 let ssh_keys = {
   eta: "id_ursa-eta_ybkyA-primary_ed25519-sk_ursa-amalthea",
   github: "id_bbjornstad-at-github_ybkyA-primary_ed25519-sk_ursa-amalthea",

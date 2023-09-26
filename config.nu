@@ -2,9 +2,8 @@
 # vim: set ft=nu ts=2 sts=2 shiftwidth=2 tw=80:
 
 # ==============================================================================
-# * Nushell ....................................................................
-#   Config File
-# ------------------------------------------------------------------------------
+# * Nushell Configuration.......................................................
+# -----------------------
 # * nushell is a modern shell, written in Rust for speed, safety, and
 # efficiency, and designed from the ground-up to make moving data around and
 # between shell commands in a straightforward process
@@ -19,10 +18,11 @@
 # with nushell is that it is (obviously) not POSIX-compliant, and hence some
 # commands might have unexpected behavior, if they were expecting such
 # compliance.
-# ------------------------------------------------------------------------------
+# -----
 
 # ------------------------------------------------------------------------------
 # ** Section::Themes:
+# -------------------
 #    This section defines the possible selections of theme that can be used in
 #    nushell. Mostly, we use a dark theme for consistency across applications
 #    and to keep eye-strain down, but these are just the default themes given by
@@ -215,6 +215,7 @@ let carapace_completer = {|spans|
 
 # ------------------------------------------------------------------------------
 # ** Section::Config:
+# -------------------
 #    The default configuration section for nushell. This defines all of the
 #    parameters for the shell initialization and setup of specific
 #    customizations.
@@ -337,13 +338,23 @@ $env.config = {
   render_right_prompt_on_last_line: false # true or false to enable or disable right prompt to be rendered on last line of the prompt.
 
   hooks: {
-    pre_prompt: [{||
-      # need to set the format to be empty in order to stop the display on
-      # terminal start.
+    pre_prompt: [{ ||
       $env.DIRENV_LOG_FORMAT = ""
-      let direnv = (direnv export json | from json)
-      let direnv = if ($direnv | length) == 1 { $direnv } else { {} }
-      $direnv | load-env
+      let direnv = (direnv export json | from json | default {})
+      if ($direnv | is-empty) {
+        return
+      }
+      $direnv
+      | items {|key, value|
+        {
+          key: $key
+          value: (if $key in $env.ENV_CONVERSIONS {
+            do ($env.ENV_CONVERSIONS | get $key | get from_string) $value
+          } else {
+            $value
+          })
+        }
+      } | transpose -ird | load-env
     }]
     pre_execution: [{||
       null  # replace with source code to run before the repl input is run
@@ -585,36 +596,40 @@ $env.config = {
 
 # ------------------------------------------------------------------------------
 # Section: User Customization
+# ---------------------------
 #    typically we want to write these in external files and import them during
 #    the evaluation of this config.nu
 
 # -----------------------------------------------------------------------------
 # Section::atuin:
+# ---------------
 # The following initializes the atuin history tool with default settings. This
 # updates as needed.
-# -----
+#
 # source ~/.local/share/atuin/init.nu
 
 # -----------------------------------------------------------------------------
 # Section::Zoxide: Autojump Manager
+# ---------------------------------
 #    Zoxide is a modern-age replacement for the cd command, which provides
 #    history, frecency, etc. as a more efficient method of changing directories
 #    on the command line.
 # -----
+
 # this is provided by nushell
 # source ($nu.default-config-dir | path join "zoxide.nu")
 source ~/.config/nushell/zoxide.nu
 
 # ------------------------------------------------------------------------------
 # Section::RSP:
+# -------------
 #    iykyk
-# -----
 use ~/prj/rspn/defrspn.nu rsp
 use ~/prj/rspn/defrspn.nu rspff
 
 # ------------------------------------------------------------------------------
 # Section::SSH-WrapKeygen:
-# -----
+# ------------------------
 # this is written so that I can stop having to remember or remind myself of the
 # specific pattern that I like to use while making ssh keys, both for the
 # application string, and for the name of the generated files as well.
@@ -622,7 +637,7 @@ use ~/prj/rspn/defrspn.nu rspff
 
 # -----------------------------------------------------------------------------
 # Section::dotcandyd:
-# -----
+# -------------------
 # these are some of the more important definitions that we need to make sure are
 # present in the shell. They define the candy alias, which is what I use to
 # manage my system configuration. The first is a simple alias to the required
@@ -633,7 +648,7 @@ use ~/.config/nushell/alias_candy.nu nucandy
 
 # ------------------------------------------------------------------------------
 # Section::keychain access
-# -----
+# ------------------------
 # this file defines the behavior for the keychain program, which handles
 # ssh connections, gpg signing keys, etc. for easy use by the end-user (me).
 # source ~/.config/nushell/keychain.nu
@@ -645,7 +660,7 @@ source ~/.config/nushell/aliases.nu
 
 # ------------------------------------------------------------------------------
 # Section::nnn
-# -----
+# ------------
 # this sets up the cd-on-quit behavior for nnn, namely by defining the new,
 # correct invocation of nnn to be simply `n`.
 # source ($nu.default-config-dir | path join "nnn-quitcd.nu")
@@ -653,7 +668,7 @@ source ~/.config/nushell/nnn-quitcd.nu
 
 # ------------------------------------------------------------------------------
 # Section::broot
-# -----
+# --------------
 # broot is a file manager, a nice view of a file-tree directly in the terminal
 # with a speedy ui and reasonably simple keybindings. this is supposed to hook
 # up to vim, but so far I'm not there yet.
@@ -661,6 +676,6 @@ source /home/ursa-major/.config/broot/launcher/nushell/br
 
 # ------------------------------------------------------------------------------
 # Section::gpg fix
-# ------
+# ----------------
 # to make gpg agent work correctly
 $env.GPG_TTY = (tty)
