@@ -47,7 +47,7 @@ export def-env genkey-ssh [
 
   let appstr = $"application=ssh:id_($yubi_name).($type).($username)@($host)-($env.HOSTNAME)"
   let appusr = $"user=($username)"
-  let gencmd = $"^ssh-keygen -t $type -O resident -O $appusr -O $appstr -C $comment"
+  let gencmd = $"^ssh-keygen -t ($type) -O resident -O ($appusr) -O ($appstr) -C ($comment)"
   nu -c $gencmd
 }
 
