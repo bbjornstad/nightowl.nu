@@ -10,7 +10,7 @@
 export alias candy = git --git-dir $env.DOTCANDYD_USER_HOME --work-tree $env.HOME
 export alias wonka = gitui --directory $env.DOTCANDYD_USER_HOME --workdir $env.HOME
 
-export def-env nucandy [
+export def --env nucandy [
   --git-dir (-g): path,               # path to directory holding dotcandyd bare repository
   --work-tree (-w): path,             # path to directory at root of files that should be tracked
   subcommand: string,                   # subcommand of git that should be run on this invocation of the candy cli tool
@@ -33,7 +33,7 @@ export def-env nucandy [
     $pathspec | str join " ")
 }
 
-export def-env nuwonka [
+export def --env nuwonka [
   --git-dir (-g): path,           # path to directory holding dotcandyd repositoryy
   --work-tree (-w): path,         # path to directory at root of files that should be tracked
   ...additional_options

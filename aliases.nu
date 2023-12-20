@@ -2,10 +2,21 @@
 # vim: set ft=nu:
 
 # ------------------------------------------------------------------------------
-# vim aliases: make sure that we are using the correct pager in nvimpager and
-# our vim call directly gets back to nvim
+# use of vim on the command line will actually invoke nvim instead.
+
+export def dnvim [ ...files ] {
+  with-env { NIGHTOWL_BACKGROUND_STYLE: "dark" } {
+    /usr/bin/nvim $files
+  }
+}
+export def lnvim [ ...files ] {
+  with-env { NIGHTOWL_BACKGROUND_STYLE: "light" } {
+    /usr/bin/nvim $files
+  }
+}
+
+export alias nvim = dnvim
 export alias vim = nvim
-# export alias less = nvimpager
 
 # ------------------------------------------------------------------------------
 # aliases for file managers.
@@ -26,10 +37,10 @@ export alias wayedit = killall -SIGUSR2 waybar
 # export alias termconf = ([$env.HOME .config wezterm wezterm.lua] | path join | nvim)
 
 
-# # ------------------------------------------------------------------------------
-# # help formatting: currently broken?
-# # - Should set up bat the correct way to display the help file for the given
-# #   command.
+# ------------------------------------------------------------------------------
+# help formatting: currently broken?
+# - Should set up bat the correct way to display the help file for the given
+#   command.
 # export def help [command: string] {
 #   $command out+err> | bat --plain --language=help
 # }
@@ -42,17 +53,16 @@ export alias lsd = ls --long
 export alias lsa = ls --long
 export alias ald = ls --long --all
 export alias aldt = ls --long --all
-export alias ls = ls --long
+export alias lsl = ls --long
 
 # ------------------------------------------------------------------------------
 # emotive package management:
 # The following configuration snafu has arisen: I want to use paru to manage
 # packages as it seems more powerful than yay, but the way that yay and yeet
-# work as aliases for these commannds is too good to not keep. Yeet that shit
-# off the nearest bridge why don't you?
+# work as aliases for these commannds is too good to not keep.
 export alias yay = paru -Syu
-export alias yeet = paru -Rns
-export alias eet = sudo pacman -Rns
+export alias yeet = paru -Rnsc
+export alias eet = sudo pacman -Rnsc
 
 # ------------------------------------------------------------------------------
 # changing the binding of the man command to point directly to batman instead of
@@ -72,32 +82,12 @@ export alias find = fd
 
 export alias cd = __zoxide_z
 
-#def-env cat [...args] {
-#  if not (which bat | is-empty) {
-#    $args | str join " " | bat
-#  } else {
-#    $args | str join " " | open --raw
-#  }
-#}
-
-#def-env grep [...args] {
-#  if not (which rg | is-empty) {
-#    $args | str join " " | rg
-#  } else {
-#    $args | str join " " | grep
-#  }
-#}
-#def-env find [...args] {
-#  if not (which fd | is-empty) {
-#    $args | str join " " | fd
-#  } else {
-#    $args | str join " " | find
-#  }
-#}
-#def-env cd [...args] {
-#  if not (which zoxide | is-empty) {
-#    $args | str join " " | __zoxide_z
-#  } else {
-#    $args | str join " " | cd
-#  }
-#}
+# ------------------------------------------------------------------------------
+# add the ability to switch manpagers with an easy alias.
+export def sman [
+  ...pages
+] {
+  with-env {MANPAGER: "bat -l Manpage"} {
+    man $pages
+  }
+}

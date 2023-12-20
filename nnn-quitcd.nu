@@ -4,7 +4,7 @@
 let cfgHome = ($env | default $"($env.HOME)/.config" XDG_CONFIG_HOME | get XDG_CONFIG_HOME)
 $env.NNN_TMPFILE = $"($cfgHome)/nnn/.lastd"
 
-def-env n [...x] {
+def --env n [...x] {
   # Launch nnn. Add desired flags after `^nnn`, ex: `^nnn -eda ($x | str join)`
   ^nnn ($x | str join)
   let newpath = (

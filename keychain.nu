@@ -22,6 +22,7 @@ let ssh_keys = {
 # we have to explicitly put them all together here, but this is probably
 # automateable if I do it a certain way.
 let keys = [ $gpg_keys.ybkyA_primary $ssh_keys.eta $ssh_keys.github $ssh_keys.codeberg ]
+let agents = [ "gpg", "ssh" ]
 
 # call the keychain executable on the command line, noting that we want to
 # inherit any already-existing agents (e.g. --inherit "any-once" flag).
@@ -33,8 +34,8 @@ let keys = [ $gpg_keys.ybkyA_primary $ssh_keys.eta $ssh_keys.github $ssh_keys.co
 # initialized agents for other programs to use as needed.
 #
 # Most of this is directly from Keychain's own manual entries, but some of it I
-# had to piece together since many people are not aware of how good this can be.
-keychain --quiet --inherit "any-once" --agents "gpg,ssh" --systemd --eval $keys
+# had to piece together myself.
+keychain --inherit "any" --agents ($agents | str join ",")  --systemd --eval $keys
   | lines -s
   | parse '{varname}={varval}; export {extravarname}' #; export {varname};'
   | select varname varval

@@ -3,7 +3,7 @@
 
 # ==============================================================================
 # * Nushell Configuration.......................................................
-# -----------------------
+# =======================
 # * nushell is a modern shell, written in Rust for speed, safety, and
 # efficiency, and designed from the ground-up to make moving data around and
 # between shell commands in a straightforward process
@@ -18,11 +18,11 @@
 # with nushell is that it is (obviously) not POSIX-compliant, and hence some
 # commands might have unexpected behavior, if they were expecting such
 # compliance.
-# -----
+# =====
 
-# ------------------------------------------------------------------------------
+# =============================================================================
 # ** Section::Themes:
-# -------------------
+# ===================
 #    This section defines the possible selections of theme that can be used in
 #    nushell. Mostly, we use a dark theme for consistency across applications
 #    and to keep eye-strain down, but these are just the default themes given by
@@ -37,7 +37,7 @@
 # https://www.nushell.sh/book/coloring_and_theming.html
 # And here is the theme collection
 # https://github.com/nushell/nu_scripts/tree/main/themes
-# -----
+# =====
 let dark_theme = {
     # color for nushell primitives
     separator: white
@@ -213,9 +213,9 @@ let carapace_completer = {|spans|
     carapace $spans.0 nushell $spans | from json
 }
 
-# ------------------------------------------------------------------------------
+# =============================================================================
 # ** Section::Config:
-# -------------------
+# ===================
 #    The default configuration section for nushell. This defines all of the
 #    parameters for the shell initialization and setup of specific
 #    customizations.
@@ -228,9 +228,6 @@ $env.config = {
   }
   rm: {
     always_trash: true # always act as if -t was given. Can be overridden with -p
-  }
-  cd: {
-    abbreviations: true # allows `cd s/o/f` to expand to `cd some/other/folder`
   }
   table: {
     mode: compact # basic, compact, compact_double, light, thin, with_love, rounded, reinforced, heavy, none, other
@@ -281,15 +278,15 @@ $env.config = {
       show_head: true
       show_index: true
 
-      # selected_cell: {fg: 'white', bg: '#777777'}
-      # selected_row: {fg: 'yellow', bg: '#C1C2A3'}
-      # selected_column: blue
+      selected_cell: {fg: 'white', bg: '#777777'}
+      selected_row: {fg: 'yellow', bg: '#C1C2A3'}
+      selected_column: blue
 
-      # padding_column_right: 2
-      # padding_column_left: 2
+      padding_column_right: 2
+      padding_column_left: 2
 
-      # padding_index_left: 2
-      # padding_index_right: 1
+      padding_index_left: 2
+      padding_index_right: 1
     }
 
     config: {
@@ -301,13 +298,13 @@ $env.config = {
   }
 
   history: {
-    max_size: 100 # Session has to be reloaded for this to take effect
+    max_size: 10000 # Session has to be reloaded for this to take effect
     sync_on_enter: false # Enable to share history between multiple sessions, else you have to close the session to write history to file
-    file_format: "plaintext" # "sqlite" or "plaintext"
+    file_format: "sqlite" # "sqlite" or "plaintext"
     isolation: true # true enables history isolation, false disables it. true will allow the history to be isolated to the current session. false will allow the history to be shared across all sessions.
   }
   completions: {
-    case_sensitive: false # set to true to enable case-sensitive completions
+    case_sensitive: true # set to true to enable case-sensitive completions
     quick: true  # set this to false to prevent auto-selecting completions when only one remains
     partial: true  # set this to false to prevent partial filling of the prompt
     algorithm: "prefix"  # prefix or fuzzy
@@ -335,7 +332,7 @@ $env.config = {
   bracketed_paste: true # enable bracketed paste, currently useless on windows
   edit_mode: vi # emacs, vi
   shell_integration: true # enables terminal markers and a workaround to arrow keys stop working issue
-  render_right_prompt_on_last_line: false # true or false to enable or disable right prompt to be rendered on last line of the prompt.
+  render_right_prompt_on_last_line: true # true or false to enable or disable right prompt to be rendered on last line of the prompt.
 
   hooks: {
     pre_prompt: [{ ||
@@ -594,50 +591,47 @@ $env.config = {
   ]
 }
 
-# ------------------------------------------------------------------------------
 # Section: User Customization
-# ---------------------------
+# ===========================
 #    typically we want to write these in external files and import them during
 #    the evaluation of this config.nu
 
-# -----------------------------------------------------------------------------
+# ==============================================================================
 # Section::atuin:
-# ---------------
+# ===============
 # The following initializes the atuin history tool with default settings. This
 # updates as needed.
 #
 # source ~/.local/share/atuin/init.nu
 
-# -----------------------------------------------------------------------------
+# ==============================================================================
 # Section::Zoxide: Autojump Manager
-# ---------------------------------
+# =================================
 #    Zoxide is a modern-age replacement for the cd command, which provides
 #    history, frecency, etc. as a more efficient method of changing directories
 #    on the command line.
-# -----
 
 # this is provided by nushell
-# source ($nu.default-config-dir | path join "zoxide.nu")
 source ~/.config/nushell/zoxide.nu
 
-# ------------------------------------------------------------------------------
+# ==============================================================================
 # Section::RSP:
-# -------------
+# =============
 #    iykyk
 use ~/prj/rspn/defrspn.nu rsp
 use ~/prj/rspn/defrspn.nu rspff
 
-# ------------------------------------------------------------------------------
+# ==============================================================================
 # Section::SSH-WrapKeygen:
-# ------------------------
+# ========================
 # this is written so that I can stop having to remember or remind myself of the
 # specific pattern that I like to use while making ssh keys, both for the
 # application string, and for the name of the generated files as well.
 # use ~/.config/nushell/keygen.nu genkey-ssh
 
-# -----------------------------------------------------------------------------
+# ==============================================================================
 # Section::dotcandyd:
-# -------------------
+# ===================
 # these are some of the more important definitions that we need to make sure are
 # present in the shell. They define the candy alias, which is what I use to
 # manage my system configuration. The first is a simple alias to the required
@@ -646,36 +640,28 @@ use ~/prj/rspn/defrspn.nu rspff
 use ~/.config/nushell/alias_candy.nu candy
 use ~/.config/nushell/alias_candy.nu nucandy
 
-# ------------------------------------------------------------------------------
-# Section::keychain access
-# ------------------------
-# this file defines the behavior for the keychain program, which handles
-# ssh connections, gpg signing keys, etc. for easy use by the end-user (me).
-# source ~/.config/nushell/keychain.nu
-
-# ------------------------------------------------------------------------------
-#
+# ==============================================================================
 # source ($nu.default-config-dir | path join "aliases.nu")
 source ~/.config/nushell/aliases.nu
 
-# ------------------------------------------------------------------------------
+# ==============================================================================
 # Section::nnn
-# ------------
+# ============
 # this sets up the cd-on-quit behavior for nnn, namely by defining the new,
 # correct invocation of nnn to be simply `n`.
 # source ($nu.default-config-dir | path join "nnn-quitcd.nu")
 source ~/.config/nushell/nnn-quitcd.nu
 
-# ------------------------------------------------------------------------------
+# ==============================================================================
 # Section::broot
-# --------------
+# ==============
 # broot is a file manager, a nice view of a file-tree directly in the terminal
 # with a speedy ui and reasonably simple keybindings. this is supposed to hook
 # up to vim, but so far I'm not there yet.
 source /home/ursa-major/.config/broot/launcher/nushell/br
 
-# ------------------------------------------------------------------------------
+# ==============================================================================
 # Section::gpg fix
-# ----------------
+# ================
 # to make gpg agent work correctly
 $env.GPG_TTY = (tty)
