@@ -24,5 +24,28 @@
 # More can be read at the following link:
 # https://www.funtoo.org/Funtoo:Keychain
 # -----
-source ~/.config/nushell/keychain.nu
+# source ~/.config/nushell/keychain.nu
 
+# ==============================================================================
+# Section: Keychain Module
+# ========================
+# this is a custom module that I have created to handle the ssh-agent and
+# gpg-agent processes through keychain. This must be included here so that we
+# can correctly use it later.
+use ~/.config/nushell/keychain.nu add-keys
+
+const ssh_keys = {
+  eta: "id_ursa-eta_ybkyA-primary_ed25519-sk_ursa-amalthea",
+  github: "id_bbjornstad-at-github_ybkyA-primary_ed25519-sk_ursa-amalthea",
+  codeberg: "id_ursa-major-at-codeberg_ybkyA-primary_ed25519-sk_ursa-amalthea"
+}
+
+const gpg_keys = {
+  passwordstore: "D67D6455A0382752"
+  ybkyA_primary: "8361328584A414FE"
+}
+
+(add-keys
+  --ssh-keys ($ssh_keys | values)
+  --gpg-keys ($gpg_keys | values)
+  --inheritance "any-once")

@@ -1,37 +1,48 @@
 #!/usr/bin/env nu
 # vim: set ft=nu ts=2 sts=2 shiftwidth=2 tw=80:
 
-
-# Nushell Config File
 # ==============================================================================
-#
+# * Nushell Configuration.......................................................
+# =======================
+# * nushell is a modern shell, written in Rust for speed, safety, and
+# efficiency, and designed from the ground-up to make moving data around and
+# between shell commands in a straightforward process
+# * This configuration file has most of the parameters that adjust behavior or
+# experience using nushell. However, one should prefer separate nu files that
+# are sourced here to create the final config,
+# * Each section below defines a particular configuration for the nushell. It
+# should be noted that I use nushell as a login shell, which has some important
+# implications to consider. That setting is not specified here, though, as it
+# must set within the system-configuration files, not nushell, e.g. by using
+# `chsh` or `usermod` to adjust the user's shell preferences. The biggest issue
+# with nushell is that it is (obviously) not POSIX-compliant, and hence some
+# commands might have unexpected behavior, if they were expecting such
+# compliance.
+# =====
 
-# +----------------------------------------------------------------------------+
-# | Configuration: Nushell
-# |    a shell for a new era.
-# |
-# | each section below defines a particular configuration for the nushell
-# | it should be noted that I use nushell as a login shell, which has some
-# | important implications to consider. That setting is not specified here,
-# | though, as it must set within the system-configuration files, not nushell.
-# +----------------------------------------------------------------------------+
-
-# ------------------------------------------------------------------------------
-# Section::Themes:
+# =============================================================================
+# ** Section::Themes:
+# ===================
 #    This section defines the possible selections of theme that can be used in
 #    nushell. Mostly, we use a dark theme for consistency across applications
 #    and to keep eye-strain down, but these are just the default themes given by
 #    nushell and includes a light version too.
 #
+#    It should be noted that these themes namely define the coloration behavior
+#    with respect to things that should be colored in the terminal, but does not
+#    set the actual color values themselves, as those are instead handled with
+#    Wezterm
+#
 # For more information on defining custom themes, see
 # https://www.nushell.sh/book/coloring_and_theming.html
 # And here is the theme collection
 # https://github.com/nushell/nu_scripts/tree/main/themes
-# -----
+# =====
 let dark_theme = {
     # color for nushell primitives
     separator: white
-    leading_trailing_space_bg: { attr: n } # no fg, no bg, attr none effectively turns this off
+    # no fg, no bg, attr none effectively turns this off
+    leading_trailing_space_bg: { attr: n }
     header: green_bold
     empty: blue
     # Closures can be used to choose colors for specific values.
@@ -116,7 +127,8 @@ let dark_theme = {
 let light_theme = {
     # color for nushell primitives
     separator: dark_gray
-    leading_trailing_space_bg: { attr: n } # no fg, no bg, attr none effectively turns this off
+    # no fg, no bg, attr none effectively turns this off
+    leading_trailing_space_bg: { attr: n }
     header: green_bold
     empty: blue
     # Closures can be used to choose colors for specific values.
@@ -203,8 +215,11 @@ let carapace_completer = {|spans|
     carapace $spans.0 nushell $spans | from json
 }
 
-# Section::Config:
-# ------------------------------------------------------------------------------
+$env.GPG_TTY = (tty)
+
+# =============================================================================
+# ** Section::Config:
+# ===================
 #    The default configuration section for nushell. This defines all of the
 #    parameters for the shell initialization and setup of specific
 #    customizations.
@@ -212,23 +227,31 @@ $env.config = {
   # true or false to enable or disable the welcome banner at startup
   show_banner: false
   ls: {
-    use_ls_colors: true # use the LS_COLORS environment variable to colorize output
-    clickable_links: true # enable or disable clickable links. Your terminal has to support links.
+    # use the LS_COLORS environment variable to colorize output
+    use_ls_colors: true
+    # enable or disable clickable links. Your terminal has to support links.
+    clickable_links: true
   }
   rm: {
-    always_trash: true # always act as if -t was given. Can be overridden with -p
-  }
-  cd: {
-    abbreviations: true # allows `cd s/o/f` to expand to `cd some/other/folder`
+    # always act as if -t was given. Can be overridden with -p
+    always_trash: true
   }
   table: {
-    mode: compact # basic, compact, compact_double, light, thin, with_love, rounded, reinforced, heavy, none, other
-    index_mode: always # "always" show indexes, "never" show indexes, "auto" = show indexes when a table has "index" column
-    show_empty: true # show 'empty list' and 'empty record' placeholders for command output
+    # basic, compact, compact_double, light, thin, with_love, rounded,
+    # reinforced, heavy, none, other
+    mode: compact
+    # "always" show indexes, "never" show indexes, "auto" = show indexes when a
+    # table has "index" column
+    index_mode: always
+    # show 'empty list' and 'empty record' placeholders for command output
+    show_empty: true
     trim: {
-      methodology: wrapping # wrapping or truncating
-      wrapping_try_keep_words: true # A strategy used by the 'wrapping' methodology
-      truncating_suffix: "..." # A suffix used by the 'truncating' methodology
+      # wrapping or truncating
+      methodology: wrapping
+      # A strategy used by the 'wrapping' methodology
+      wrapping_try_keep_words: true
+      # A suffix used by the 'truncating' methodology
+      truncating_suffix: "..."
     }
   }
 
@@ -270,15 +293,15 @@ $env.config = {
       show_head: true
       show_index: true
 
-      # selected_cell: {fg: 'white', bg: '#777777'}
-      # selected_row: {fg: 'yellow', bg: '#C1C2A3'}
-      # selected_column: blue
+      selected_cell: {fg: 'white', bg: '#777777'}
+      selected_row: {fg: 'yellow', bg: '#C1C2A3'}
+      selected_column: blue
 
-      # padding_column_right: 2
-      # padding_column_left: 2
+      padding_column_right: 2
+      padding_column_left: 2
 
-      # padding_index_left: 2
-      # padding_index_right: 1
+      padding_index_left: 2
+      padding_index_right: 1
     }
 
     config: {
@@ -290,64 +313,102 @@ $env.config = {
   }
 
   history: {
-    max_size: 100 # Session has to be reloaded for this to take effect
-    sync_on_enter: false # Enable to share history between multiple sessions, else you have to close the session to write history to file
-    file_format: "plaintext" # "sqlite" or "plaintext"
-    isolation: true # true enables history isolation, false disables it. true will allow the history to be isolated to the current session. false will allow the history to be shared across all sessions.
+# Session has to be reloaded for this to take effect
+    max_size: 10000
+    sync_on_enter: false
+    # Enable to share history between multiple sessions, else you have to close
+    # the session to write history to file
+    file_format: "sqlite"
+    # "sqlite" or "plaintext"
+    isolation: true
+    # true enables history isolation, false disables it. true will allow the
+    # history to be isolated to the current session. false will allow the
+    # history to be shared across all sessions.
   }
   completions: {
-    case_sensitive: false # set to true to enable case-sensitive completions
-    quick: true  # set this to false to prevent auto-selecting completions when only one remains
-    partial: true  # set this to false to prevent partial filling of the prompt
-    algorithm: "prefix"  # prefix or fuzzy
+    # set to true to enable case-sensitive completions
+    case_sensitive: true
+    # set this to false to prevent auto-selecting completions when only one
+    # remains
+    quick: true
+    # set this to false to prevent partial filling of the prompt
+    partial: true
+    # prefix or fuzzy
+    algorithm: "prefix"
     external: {
-      enable: true # set to false to prevent nushell looking into $env.PATH to find more suggestions, `false` recommended for WSL users as this look up my be very slow
-      max_results: 100 # setting it lower can improve completion performance at the cost of omitting some options
-      completer: $carapace_completer # check 'carapace_completer' above as an example
+      # set to false to prevent nushell looking into $env.PATH to find more
+      # suggestions, `false` recommended for WSL users as this look up my be
+      # very slow
+      enable: true
+      # setting it lower can improve completion performance at the cost of
+      # omitting some options
+      max_results: 100
+# check 'carapace_completer' above as an example
+      completer: $carapace_completer
     }
   }
   filesize: {
-    metric: true # true => KB, MB, GB (ISO standard), false => KiB, MiB, GiB (Windows standard)
-    format: "auto" # b, kb, kib, mb, mib, gb, gib, tb, tib, pb, pib, eb, eib, zb, zib, auto
+    # true => KB, MB, GB (ISO standard), false => KiB, MiB, GiB (Windows
+    # standard)
+    metric: true
+    # b, kb, kib, mb, mib, gb, gib, tb, tib, pb, pib, eb, eib, zb, zib, auto
+    format: "auto"
   }
   cursor_shape: {
-    emacs: line # block, underscore, line, blink_block, blink_underscore, blink_line (line is the default)
-    vi_insert: blink_line # block, underscore, line , blink_block, blink_underscore, blink_line (block is the default)
-    vi_normal: blink_block # block, underscore, line, blink_block, blink_underscore, blink_line (underscore is the default)
+    # block, underscore, line, blink_block, blink_underscore, blink_line (line
+    # is the default)
+    emacs: line
+    # block, underscore, line , blink_block, blink_underscore, blink_line (block
+    # is the default)
+    vi_insert: blink_line
+    # block, underscore, line, blink_block, blink_underscore, blink_line
+    # (underscore is the default)
+    vi_normal: blink_block
   }
-  color_config: $dark_theme   # if you want a light theme, replace `$dark_theme` to `$light_theme`
+# if you want a light theme, replace `$dark_theme` to `$light_theme`
+  color_config: $dark_theme
   use_grid_icons: true
-  footer_mode: "25" # always, never, number_of_rows, auto
-  float_precision: 2 # the precision for displaying floats in tables
-  # buffer_editor: "emacs" # command that will be used to edit the current line buffer with ctrl+o, if unset fallback to $env.EDITOR and $env.VISUAL
+# always, never, number_of_rows, auto
+  footer_mode: "25"
+# the precision for displaying floats in tables
+  float_precision: 2
+  # command that will be used to edit the current line buffer with ctrl+o, if
+  # unset fallback to $env.EDITOR and $env.VISUAL
+  # buffer_editor: "emacs"
   use_ansi_coloring: true
-  bracketed_paste: true # enable bracketed paste, currently useless on windows
-  edit_mode: vi # emacs, vi
-  shell_integration: true # enables terminal markers and a workaround to arrow keys stop working issue
-  render_right_prompt_on_last_line: false # true or false to enable or disable right prompt to be rendered on last line of the prompt.
+  # enable bracketed paste, currently useless on windows
+  bracketed_paste: true
+  # emacs, vi
+  edit_mode: vi
+  # enables terminal markers and a workaround to arrow keys stop working issue
+  shell_integration: true
+  # true or false to enable or disable right prompt to be rendered on last line
+  # of the prompt.
+  render_right_prompt_on_last_line: true
 
   hooks: {
-    pre_prompt: [{||
-      # need to set the format to be empty in order to stop the display on
-      # terminal start.
-      $env.DIRENV_LOG_FORMAT = ""
-      let direnv = (direnv export json | from json)
-      let direnv = if ($direnv | length) == 1 { $direnv } else { {} }
-      $direnv | load-env
+    pre_prompt: [{ ||
+      # replace with source code to run before the prompt is generated/inserted
+      null
     }]
     pre_execution: [{||
-      null  # replace with source code to run before the repl input is run
+      # replace with source code to run before the repl input is run
+      null
     }]
     env_change: {
+      # replace with source code to run if the PWD environment is different
+      # since the last repl input
       PWD: [{|before, after|
-        null  # replace with source code to run if the PWD environment is different since the last repl input
+        null
       }]
     }
     display_output: {||
       if (term size).columns >= 100 { table -e } else { table }
     }
+    # replace with source code to return an error message when a command is not
+    # found
     command_not_found: {||
-      null  # replace with source code to return an error message when a command is not found
+      null
     }
   }
   menus: [
@@ -360,7 +421,9 @@ $env.config = {
         type: {
             layout: columnar
             columns: 4
-            col_width: 20   # Optional value. If missing all the screen width is used to calculate column width
+            # Optional value. If missing all the screen width is used to
+            # calculate column width
+            col_width: 20
             col_padding: 2
         }
         style: {
@@ -390,7 +453,9 @@ $env.config = {
         type: {
             layout: description
             columns: 4
-            col_width: 20   # Optional value. If missing all the screen width is used to calculate column width
+            # Optional value. If missing all the screen width is used to
+            # calculate column width
+            col_width: 20
             col_padding: 2
             selection_rows: 4
             description_rows: 10
@@ -486,7 +551,8 @@ $env.config = {
       name: completion_previous
       modifier: shift
       keycode: backtab
-      mode: [emacs, vi_normal, vi_insert] # Note: You can add the same keybinding to all modes by using a list
+      # Note: You can add the same keybinding to all modes by using a list
+      mode: [emacs, vi_normal, vi_insert]
       event: { send: menuprevious }
     }
     {
@@ -513,7 +579,7 @@ $env.config = {
           { send: menupageprevious }
           { edit: undo }
         ]
-       }
+      }
     }
     {
       name: yank
@@ -573,45 +639,59 @@ $env.config = {
   ]
 }
 
-# ------------------------------------------------------------------------------
 # Section: User Customization
+# ===========================
 #    typically we want to write these in external files and import them during
 #    the evaluation of this config.nu
 
-# -----------------------------------------------------------------------------
+# ==============================================================================
+# Section: direnv:
+# ================
+# as of a recentish update to nushell, it seems as though the proper hook into
+# the direnv package is supposed to be set up this way instead. Note that we
+# able to auto-update this when needed.
+$env.DIRENV_LOG_FORMAT = ""
+$env.config.hooks.env_change.PWD = (
+  $env.config.hooks.env_change.PWD | append (source
+    ~/.config/nushell/hooks/direnv.nu)
+)
+
+# ==============================================================================
 # Section::atuin:
+# ===============
 # The following initializes the atuin history tool with default settings. This
 # updates as needed.
-# -----
+#
 # source ~/.local/share/atuin/init.nu
 
-# -----------------------------------------------------------------------------
+# ==============================================================================
 # Section::Zoxide: Autojump Manager
-#    Zoxide is a modern-age replacement for the cd command, which provides
-#    history, frecency, etc. as a more efficient method of changing directories
-#    on the command line.
-# -----
+# =================================
+# Zoxide is a modern-age replacement for the cd command, which provides history,
+# frecency, etc. as a more efficient method of changing directories on the
+# command line.
+
 # this is provided by nushell
 source ~/.config/nushell/zoxide.nu
 
-# ------------------------------------------------------------------------------
+# ==============================================================================
 # Section::RSP:
+# =============
 #    iykyk
-# -----
 use ~/prj/rspn/defrspn.nu rsp
-use ~/prj/rspn/defrspn.nu rspsk
+use ~/prj/rspn/defrspn.nu rspff
 
-# ------------------------------------------------------------------------------
+# ==============================================================================
 # Section::SSH-WrapKeygen:
-# -----
+# ========================
 # this is written so that I can stop having to remember or remind myself of the
 # specific pattern that I like to use while making ssh keys, both for the
-# application string, and for the name of the generated files as well.
-# use ~/.config/nushell/keygen.nu genkey-ssh
+# application string, and for the name of the generated files as well. use
+# ~/.config/nushell/keygen.nu genkey-ssh
 
-# -----------------------------------------------------------------------------
+# ==============================================================================
 # Section::dotcandyd:
-# -----
+# ===================
 # these are some of the more important definitions that we need to make sure are
 # present in the shell. They define the candy alias, which is what I use to
 # manage my system configuration. The first is a simple alias to the required
@@ -620,27 +700,29 @@ use ~/prj/rspn/defrspn.nu rspsk
 use ~/.config/nushell/alias_candy.nu candy
 use ~/.config/nushell/alias_candy.nu nucandy
 
-# ------------------------------------------------------------------------------
-# Section::keychain access
-# -----
-# this file defines the behavior for the keychain program, which handles
-# ssh connections, gpg signing keys, etc. for easy use by the end-user (me).
-# source ~/.config/nushell/keychain.nu
-
-# ------------------------------------------------------------------------------
-#
+# ==============================================================================
+# source ($nu.default-config-dir | path join "aliases.nu")
 source ~/.config/nushell/aliases.nu
 
-# ------------------------------------------------------------------------------
+# ==============================================================================
+# Section::nnn
+# ============
+# this sets up the cd-on-quit behavior for nnn, namely by defining the new,
+# correct invocation of nnn to be simply `n`.
+# source ($nu.default-config-dir | path join "nnn-quitcd.nu")
+source ~/.config/nushell/nnn-quitcd.nu
+
+# ==============================================================================
 # Section::broot
-# -----
+# ==============
 # broot is a file manager, a nice view of a file-tree directly in the terminal
 # with a speedy ui and reasonably simple keybindings. this is supposed to hook
 # up to vim, but so far I'm not there yet.
 source /home/ursa-major/.config/broot/launcher/nushell/br
 
-# ------------------------------------------------------------------------------
+# ==============================================================================
 # Section::gpg fix
-# ------
+# ================
 # to make gpg agent work correctly
+# gpg-agent --options $"($env.HOME)/.gnupg/gpg-agent.conf" --daemon
 $env.GPG_TTY = (tty)
