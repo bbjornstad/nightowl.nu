@@ -35,17 +35,17 @@
 use ~/.config/nushell/keychain.nu add-keys
 
 const ssh_keys = {
-  eta: "id_ursa-eta_ybkyA-primary_ed25519-sk_ursa-amalthea",
-  github: "id_bbjornstad-at-github_ybkyA-primary_ed25519-sk_ursa-amalthea",
-  codeberg: "id_ursa-major-at-codeberg_ybkyA-primary_ed25519-sk_ursa-amalthea"
+    eta: "id_ursa-eta_ybkyA-primary_ed25519-sk_ursa-amalthea",
+    github: "id_bbjornstad-at-github_ybkyA-primary_ed25519-sk_ursa-amalthea",
+    codeberg: "id_ursa-major-at-codeberg_ybkyA-primary_ed25519-sk_ursa-amalthea"
 }
 
 const gpg_keys = {
-  passwordstore: "D67D6455A0382752"
-  ybkyA_primary: "8361328584A414FE"
+    passwordstore: "D67D6455A0382752"
+    ybkyA_primary: "8361328584A414FE"
 }
 
 (add-keys
-  --ssh-keys ($ssh_keys | values)
-  --gpg-keys ($gpg_keys | values)
-  --inheritance "any-once")
+    --ssh-keys ($ssh_keys | values)
+    --gpg-keys ($gpg_keys | values)
+    --inheritance "any-once")

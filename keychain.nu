@@ -11,32 +11,31 @@
 # sets up the keychain configuration and allows some user-adjustment for the
 # parameters that are used in the call to keychain.
 export def --env add-keys [
-  --ssh-keys (-s): list=[], # ids of ssh keys to add via keychain
-  --gpg-keys (-g): list=[], # ids of gpg keys to add via keychain
-  --inheritance (-i): string="any-once" # inherits behavior for keychain
+    --ssh-keys (-s): list=[], # ids of ssh keys to add via keychain
+    --gpg-keys (-g): list=[], # ids of gpg keys to add via keychain
+    --inheritance (-i): string="any-once" # inherits behavior for keychain
 ] {
-  mut agents = []
-  mut keys = []
+    mut agents = []
+    mut keys = []
 
-  if not ($ssh_keys | is-empty) {
-    $agents = ($agents | append "ssh")
-  }
-  if not ($gpg_keys | is-empty) {
-    $agents = ($agents | append "gpg")
-  }
-  $keys = ($keys
-    | append $ssh_keys
-    | append $gpg_keys)
-  # print ($agents | str join ",")
-  (keychain
+    if not ($ssh_keys | is-empty) {
+        $agents = ($agents | append "ssh")
+    }
+    if not ($gpg_keys | is-empty) {
+        $agents = ($agents | append "gpg")
+    }
+    $keys = ($keys
+        | append $ssh_keys
+        | append $gpg_keys)
+    (keychain
     --inherit $inheritance
     --agents ($agents | str join ",")
     --systemd
     --eval $keys)
-    | lines -s
-    | parse '{varname}={varval}; export {_};'
-    | select varname varval
-    | transpose -r
-    | into record
-    | load-env
+        | lines -s
+        | parse '{varname}={varval}; export {_};'
+        | select varname varval
+        | transpose -r
+        | into record
+        | load-env
 }

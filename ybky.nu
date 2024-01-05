@@ -58,7 +58,7 @@ export def-env "ybky gen fido" [ ] .{
 # `ybky mktemp`: helper function that creates a temporary home directory for the
 # duration of this session. If the --dry flag is specified, then the directory
 export def-env "ybky mktemp" [
-  --name?: string=$"gnupg_(^date +%Y%m%d%H%M)_XXX" # the string to use as template for name of the directory; can use certain forms of syntatic sugar, see `man mktemp`
+  --name?: string=$"gnupg_(^date +%Y%m%d%H%M)_XXX" # the string to use as template for name of the directory; can use certain forms of syntactiw sugar, see `man mktemp`
   --dry?: bool=false # whether or not the directory should be actually created; if true, will only return the path pointing to the theoretical location (unsafe).
 ] {
   $env.GNUPGHOME =  (mktemp --directory -t $name)
