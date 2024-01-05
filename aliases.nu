@@ -1,17 +1,32 @@
 #!/usr/bin/env nu
 # vim: set ft=nu:
 
+#SPDX-FileCopyrightText: 2024 Bailey Bjornstad | ursa-major <bailey@bjornstad.dev>
+#SPDX-License-Identifier: GPL-3.0-only
+
+#Copyright (C) 2024 Bailey Bjornstad | ursa-major bailey@bjornstad.dev
+
+#This program is free software: you can redistribute it and/or modify it under
+#the terms of the GNU General Public License as published by the Free Software
+#Foundation, version 3.
+
+#This program is distributed in the hope that it will be useful, but WITHOUT ANY
+#WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+#PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+#You should have received a copy of the GNU General Public License along with
+#this program. If not, see <https://www.gnu.org/licenses/>.
+
 # ------------------------------------------------------------------------------
 # use of vim on the command line will actually invoke nvim instead.
-
-export def dnvim [ ...files ] {
+export def dnvim [ ...args ] {
     with-env { NIGHTOWL_BACKGROUND_STYLE: "dark" } {
-        /usr/bin/nvim $files
+        /usr/bin/nvim $args
     }
 }
-export def lnvim [ ...files ] {
+export def lnvim [ ...args ] {
     with-env { NIGHTOWL_BACKGROUND_STYLE: "light" } {
-        /usr/bin/nvim $files
+        /usr/bin/nvim $args
     }
 }
 
@@ -26,16 +41,6 @@ export alias nnn = with-env { MANPAGER: bat } { nnn }
 # hyprland specific aliases:
 # - restart waybar with a SIGUSR2 signal.
 export alias wayedit = killall -SIGUSR2 waybar
-
-# ------------------------------------------------------------------------------
-# configuration file edit aliases:
-# these are shortcuts to open an editor (nvim) on the specified configuration
-# file.
-# export alias shellconf = ([$env.HOME, .profile] | path join | nvim)
-# export alias shelldconf = ([$env.HOME, .profile.d] | path join | nvim)
-# export alias vimconf = ([$env.HOME, .config, nvim] | path join | nvim)
-# export alias termconf = ([$env.HOME .config wezterm wezterm.lua] | path join | nvim)
-
 
 # ------------------------------------------------------------------------------
 # help formatting: currently broken?
@@ -90,4 +95,23 @@ export def sman [
     with-env {MANPAGER: "bat -l Manpage"} {
         man $pages
     }
+}
+
+# ------------------------------------------------------------------------------
+# alias for manipulating git subtree workflow for managing nushell dependencies
+export def "nutree" [] {
+  git subtree $in
+}
+
+export def "nutree update" [
+  name: string="nufmt",
+  branch: string="main"
+] {
+  let path = ($nu.default-config-dir | path join "utils" "nufmt")
+  let id = (["nushell" $name ] | str join "-")
+  let gitdir = ($nu.default-config-dir | path join ".git")
+  (git
+  --work-tree $nu.default-config-dir
+  --git-dir $gitdir
+  subtree pull --prefix $path $id $branch)
 }

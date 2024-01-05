@@ -12,7 +12,7 @@ def pretty-print-command [] {
 }
 
 # check standard code formatting and apply the changes
-export def fmt [
+export def nufmt [
     --check: bool  # do not apply the format changes, only check the syntax
     --verbose: bool # print extra information about the command's progress
 ] {
@@ -22,7 +22,8 @@ export def fmt [
 
     if $check {
         try {
-            cargo fmt --all -- --check
+            rustfmt --
+            # cargo fmt --all -- --check
         } catch {
             error make --unspanned {
                 msg: $"\nplease run ('toolkit fmt' | pretty-print-command) to fix formatting!"
