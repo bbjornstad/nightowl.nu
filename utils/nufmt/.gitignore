@@ -1,0 +1,12 @@
+# Rust
+/target
+
+# Nix
+result
+
+# Direnv
+.direnv
+
+# editors
+.idea/
+.vscode/
