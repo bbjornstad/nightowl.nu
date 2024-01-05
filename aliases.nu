@@ -5,14 +5,14 @@
 # use of vim on the command line will actually invoke nvim instead.
 
 export def dnvim [ ...files ] {
-  with-env { NIGHTOWL_BACKGROUND_STYLE: "dark" } {
-    /usr/bin/nvim $files
-  }
+    with-env { NIGHTOWL_BACKGROUND_STYLE: "dark" } {
+        /usr/bin/nvim $files
+    }
 }
 export def lnvim [ ...files ] {
-  with-env { NIGHTOWL_BACKGROUND_STYLE: "light" } {
-    /usr/bin/nvim $files
-  }
+    with-env { NIGHTOWL_BACKGROUND_STYLE: "light" } {
+        /usr/bin/nvim $files
+    }
 }
 
 export alias nvim = dnvim
@@ -59,7 +59,7 @@ export alias lsl = ls --long
 # emotive package management:
 # The following configuration snafu has arisen: I want to use paru to manage
 # packages as it seems more powerful than yay, but the way that yay and yeet
-# work as aliases for these commannds is too good to not keep.
+# work as aliases for these commands is too good to not keep.
 export alias yay = paru -Syu
 export alias yeet = paru -Rnsc
 export alias eet = sudo pacman -Rnsc
@@ -85,9 +85,9 @@ export alias cd = __zoxide_z
 # ------------------------------------------------------------------------------
 # add the ability to switch manpagers with an easy alias.
 export def sman [
-  ...pages
+    ...pages
 ] {
-  with-env {MANPAGER: "bat -l Manpage"} {
-    man $pages
-  }
+    with-env {MANPAGER: "bat -l Manpage"} {
+        man $pages
+    }
 }
