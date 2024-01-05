@@ -726,6 +726,7 @@ source /home/ursa-major/.config/broot/launcher/nushell/br
 # this sets up some custom directories that are used to hold things like
 # downloaded scripts, custom completions, externs, etc.
 use ($nu.default-config-dir | path join completions) *
+use ($nu.default-config-dir | path join utils) *
 
 # Section::gpg fix
 # ================
