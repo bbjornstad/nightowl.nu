@@ -1,9 +1,9 @@
 #)!/usr/bin/env nu
 
-# ------------------------------------------------------------------------------
+# ==============================================================================
 # Nushell Environment Config File
 # Implemented for nightshell
-# ------------------------------------------------------------------------------
+# ==========================
 
 # env.nu:
 # =======
@@ -78,8 +78,8 @@ def create_right_prompt [] {
 
 
 
-# ------------------------------------------------------------------------------
 # Section::PromptAssignments:
+# ===========================
 #   the following assigns defined prompts to the left or right sides of the
 #   terminal, where the prompts are allowed to appear.
 #
@@ -103,8 +103,8 @@ $env.PROMPT_INDICATOR_VI_INSERT = {|| }
 $env.PROMPT_INDICATOR_VI_NORMAL = {|| }
 $env.PROMPT_MULTILINE_INDICATOR = {|| }
 
-#-------------------------------------------------------------------------------
 # Section::ConvertEnvironment:
+# ============================
 #   the following section defines how nushell should "translate" environment
 #   variables into a nushell-compatible format. Because data types are much
 #   more rigid in nushell than other shells, conversions can help reduce some
@@ -134,17 +134,20 @@ $env.ENV_CONVERSIONS = {
     }
 }
 
-# ------------------------------------------------------------------------------
 # Section::PATH:
+# ==============
 #   this section updates the configuration to know where to look for external
 #   libraries, binaries, or scripts. In other words, directories to search for
 #   scripts when calling source or use By default,
 #   <nushell-config-dir>/scripts is added
 let share = ($nu.default-config-dir | path join "share")
 $env.NU_LIB_DIRS = [
-  $share
+    $share
 ]
-let autogen = ([$share "custom_completions" "auto-generate" "completions"] | path join)
+let autogen = (
+    [$share "custom_completions" "auto-generate" "completions"]
+    | path join
+)
 
 $env.NU_LIB_DIRS = ($env.NU_LIB_DIRS
 | prepend [$autogen])
@@ -156,12 +159,15 @@ $env.NU_PLUGIN_DIRS = [
     $plug_base
 ]
 
-# ------------------------------------------------------------------------------
-# Section::UserCustomization:
-#   this section of the file handles importation/management of certain kinds of
-#   environment variables, namely related to any sort of arguments we've
-#   recently defined
+# add in cargo binary directory to path to allow for cargo installed pkgs to
+# show up in nushell correctly
+let cargo_bin = ([ $env.HOME, ".cargo", "bin" ] | path join)
+let extra_paths = [ $cargo_bin ]
 
+$env.PATH = ($env.PATH | split row (char esep) | prepend $extra_paths)
+
+# Section::dotcandyd
+# ==================
 # the dotcandyd systems home folder here. this is used in the nushell by default
 # and for those who use this program, I would recommend it strongly.
 # configuration definition of the candy cli
