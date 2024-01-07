@@ -50,7 +50,7 @@
 # https://www.nushell.sh/book/coloring_and_theming.html
 # And here is the theme collection
 # https://github.com/nushell/nu_scripts/tree/main/themes
-# ----------
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 let dark_theme = {
     # color for nushell primitives
     separator: white
@@ -230,11 +230,11 @@ let carapace_completer = {|spans|
 
 $env.GPG_TTY = (tty)
 
-# Section::Config:
-# ================
-#   The default configuration section for nushell. This defines all of the
-#   parameters for the shell initialization and setup of specific
-#   customizations.
+# Section: Main User Configuration
+# ================================
+# this is the meat and potatoes of nushell, all configuration is ultimately
+# needed to hook into this step in order to get caught by the nushell init
+# process.
 $env.config = {
     # true or false to enable or disable the welcome banner at startup
     show_banner: false
@@ -652,10 +652,18 @@ $env.config = {
     ]
 }
 
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # Section: User Customization
 # ===========================
 # typically we want to write these in external files and import them during the
 # evaluation of this config.nu
+
+# Section: libconfig Definition
+# =============================
+# libconfig is a simple utility library that we are going to use in our
+# configuration setup here. Mostly, it provides some utilities for iterating
+# through collections of modules in order to define environment and commands
+# succinctly.
 
 # Section: direnv:
 # ================
@@ -689,13 +697,6 @@ source ($nu.default-config-dir | path join zoxide.nu)
 use ~/prj/rspn/defrspn.nu rsp
 use ~/prj/rspn/defrspn.nu rspff
 
-# Section::SSH-WrapKeygen:
-# ========================
-# this is written so that I can stop having to remember or remind myself of the
-# specific pattern that I like to use while making ssh keys, both for the
-# application string, and for the name of the generated files as well. use
-# ~/.config/nushell/keygen.nu genkey-ssh
-
 # Section::dotcandyd:
 # ===================
 # these are some of the more important definitions that we need to make sure are
@@ -725,9 +726,12 @@ source /home/ursa-major/.config/broot/launcher/nushell/br
 # ======================
 # this sets up some custom directories that are used to hold things like
 # downloaded scripts, custom completions, externs, etc.
-use ($nu.default-config-dir | path join completions) *
-use ($nu.default-config-dir | path join utils) *
-use ($nu.default-config-dir | path join share) *
+use core *
+use completions ficus *
+use utils *
+use share *
+
+let completions_list = (glob ([$nu.default-config-dir completions *] | path join))
 
 # Section::gpg fix
 # ================

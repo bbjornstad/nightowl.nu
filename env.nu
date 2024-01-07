@@ -140,17 +140,20 @@ $env.ENV_CONVERSIONS = {
 #   libraries, binaries, or scripts. In other words, directories to search for
 #   scripts when calling source or use By default,
 #   <nushell-config-dir>/scripts is added
+let completions = ($nu.default-config-dir | path join "completions")
+let core = ($nu.default-config-dir | path join "core")
+let utils = ($nu.default-config-dir | path join "utils")
 let share = ($nu.default-config-dir | path join "share")
 $env.NU_LIB_DIRS = [
-    $share
+    $nu.default-config-dir
 ]
 let autogen = (
     [$share "custom_completions" "auto-generate" "completions"]
     | path join
 )
 
-$env.NU_LIB_DIRS = ($env.NU_LIB_DIRS
-| prepend [$autogen])
+# $env.NU_LIB_DIRS = ($env.NU_LIB_DIRS
+# | prepend [$autogen])
 # Directories to search for plugin binaries when calling register
 
 # By default, <nushell-config-dir>/plugins is added
