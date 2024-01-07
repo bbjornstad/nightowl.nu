@@ -1,32 +1,28 @@
 #!/usr/bin/env nu
-# vim: set ft=nu ts=2 sts=2 shiftwidth=2 tw=80:
 
-# ------------------------------------------------------------------------------
-# Testing Something:
-# -----
-# A necessary step for most GPG enabled workflows is to make sure that the
-# GPG_TTY environment variable is set correctly to the current tty. This should
-# occur before the need for any gpg-agent, and therefore should maybe go right
-# here? directly before? the only thing is this is login.nu...might present
-# issues?
-# $env.GPG_TTY = (tty)
+#SPDX-FileCopyrightText: 2024 Bailey Bjornstad | ursa-major <bailey@bjornstad.dev>
+#SPDX-License-Identifier: GPL-3.0-only
 
-# ------------------------------------------------------------------------------
-# Login.nu
-#     this file defines the behavior that nushell should inherit when the
-#     program is initialized.
-#     Mainly, we set up keychain in this file to minimize how much
-#     authentication must be completed. Keychain, as a program, is pretty good
-#     at handling secrets/new environment configurations on the fly. Maybe that
-#     is a reasonable place to look around at in order to glean some more
-#     information.
+#Copyright (C) 2024 Bailey Bjornstad | ursa-major bailey@bjornstad.dev
+
+#This program is free software: you can redistribute it and/or modify it under
+#the terms of the GNU General Public License as published by the Free Software
+#Foundation, version 3.
+
+#This program is distributed in the hope that it will be useful, but WITHOUT ANY
+#WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+#PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+#You should have received a copy of the GNU General Public License along with
+#this program. If not, see <https://www.gnu.org/licenses/>.
+
+
+# Nightshell: Login Configuration
+# ===============================
+# this file defines the behavior that nushell should inherit when the program is
+# initialized. Mainly, we set up keychain in this file to minimize how much
+# authentication must be completed.
 #
-# More can be read at the following link:
-# https://www.funtoo.org/Funtoo:Keychain
-# -----
-# source ~/.config/nushell/keychain.nu
-
-# ==============================================================================
 # Section: Keychain Module
 # ========================
 # this is a custom module that I have created to handle the ssh-agent and

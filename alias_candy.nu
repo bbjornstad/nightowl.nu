@@ -1,5 +1,4 @@
 #!/usr/bin/env nu
-# vim: set ft=nu ts=2 sw=2 sts=2 expandtab:
 
 # ------------------------------------------------------------------------------
 # set up the correct specification for the candy alias used presently. Our main
