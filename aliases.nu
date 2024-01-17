@@ -16,32 +16,30 @@
 #You should have received a copy of the GNU General Public License along with
 #this program. If not, see <https://www.gnu.org/licenses/>.
 
-# Section: Neovim Aliases
-# =======================
+# ╓──────────────────────────────────────────────────────────────────────╖
+# ║ nushell aliases                                                      ║
+# ╙──────────────────────────────────────────────────────────────────────╜
+
+# ─[ Neovim Aliases ]───────────────────────────────────────────────────────
 # use of vim on the command line will actually invoke nvim instead. Also set up
 # two aliases to adjust the background color if desired.
 export def dnvim [ ...args ] {
     with-env { NIGHTOWL_BACKGROUND_STYLE: "dark" } {
-        /usr/bin/nvim $args
+        nvim ...$args
     }
 }
 export def lnvim [ ...args ] {
     with-env { NIGHTOWL_BACKGROUND_STYLE: "light" } {
-        /usr/bin/nvim $args
+        nvim ...$args
     }
 }
 
-export alias nvim = dnvim
-export alias vim = nvim
-
-# Section: File Managers
-# ======================
+# ─[ File Managers ]────────────────────────────────────────────────────────
 # aliases for nnn with the correct environment variables, presumably this was to
 # allow nnn preview to work correctly.
 export alias nnn = with-env { MANPAGER: bat } { nnn }
 
-# Section: Hyprland
-# =================
+# ─[ Hyprland ]─────────────────────────────────────────────────────────────
 # aliases for Hyprland tiling desktop window manager
 # TODO: modify the below by pulling into a separate module or overlay that can
 # be included and then we can also add any additional implementations there.
@@ -54,8 +52,7 @@ export alias wayedit = killall -SIGUSR2 waybar
 #   $command out+err> | bat --plain --language=help
 # }
 
-# Section: LS Aliases
-# ===================
+# ─[ LS Aliases ]───────────────────────────────────────────────────────────
 # Simply defines a few aliases that I use to query directories in a more
 # specific fashion.
 export alias lsd = ls --long
@@ -64,8 +61,7 @@ export alias ald = ls --long --all
 export alias aldt = ls --long --all
 export alias lsl = ls --long
 
-# Section: Emotive Package Management
-# ===================================
+# ─[ Emotive Package Management ]───────────────────────────────────────────
 # The following configuration snafu has arisen: I want to use paru to manage
 # packages as it seems more powerful than yay, but the way that yay and yeet
 # work as aliases for these commands is too good to not keep.
@@ -73,8 +69,7 @@ export alias yay = paru -Syu
 export alias yeet = paru -Rnsc
 export alias eet = sudo pacman -Rnsc
 
-# Section: Searching and File System Navigation
-# =============================================
+# ─[ Searching and File System Navigation ]─────────────────────────────────
 # cat -> bat
 # grep -> rg
 # find -> fd
@@ -85,8 +80,7 @@ export alias find = fd
 
 export alias cd = __zoxide_z
 
-# Section: Manpager Woes
-# ======================
+# ─[ Section: Manpager Woes ]───────────────────────────────────────────────
 # add the ability to switch manpagers with an easy alias; helpful for when nvim
 # is down and we still need to read manual pages.
 export def sman [
@@ -97,24 +91,4 @@ export def sman [
     }
 }
 
-# Section: Git Subtree Workflow
-# =============================
-# alias for manipulating git subtree workflow for managing nushell dependencies
-# TODO: move to a separate module and make not nushell specific, but rather
-# capable of operating on any git repo.
-export def "nutree" [] {
-    git subtree $in
-}
 
-export def "nutree update" [
-    name: string="nufmt",
-    branch: string="main"
-] {
-    let path = ($nu.default-config-dir | path join "utils" "nufmt")
-        let id = (["nushell" $name ] | str join "-")
-        let gitdir = ($nu.default-config-dir | path join ".git")
-        (git
-         --work-tree $nu.default-config-dir
-         --git-dir $gitdir
-         subtree pull --prefix $path $id $branch)
-}

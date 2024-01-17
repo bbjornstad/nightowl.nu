@@ -1,4 +1,2 @@
-export-env {
-   module ficus.nu
-   export use ficus *
-}
+module completions/ficus.nu
+export use ficus *
