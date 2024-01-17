@@ -805,8 +805,6 @@ export use libstd *
 # to the external git tool
 # export use core alias_candy
 
-# let completions_list = (glob ([$nu.default-config-dir completions *] | path join))
-
 # Section::gpg fix
 # ================
 # to make gpg agent work correctly

@@ -76,6 +76,10 @@ def create_right_prompt [] {
     [$last_exit_code, (char space), $time_segment] | str join
 }
 
+# ─[ Section::NUPM ]────────────────────────────────────────────────────────
+# defines the location that nupm should take
+$env.NUPM_HOME = ([$nu.default-config-dir "pkg/"] | path join)
+
 # ─[ Section::PromptAssignments: ]──────────────────────────────────────────
 # the following assigns defined prompts to the left or right sides of the
 # terminal, where the prompts are allowed to appear.
@@ -143,6 +147,14 @@ $env.NU_LIB_DIRS = [
     $nu.default-config-dir
 ]
 
+# add in the specific directory that corresponds to nupm so that we can use it
+$env.NU_LIB_DIRS = ($env.NU_LIB_DIRS
+    | append (
+        [$env.NUPM_HOME "modules"]
+        | path join
+    )
+)
+
 # Directories to search for plugin binaries when calling register
 # By default, <nushell-config-dir>/plugins is added
 let plug_base = ($nu.default-config-dir | path join "plugins")
@@ -153,7 +165,12 @@ $env.NU_PLUGIN_DIRS = [
 # add in cargo binary directory to path to allow for cargo installed pkgs to
 # show up in nushell correctly
 let cargo_bin = ([ $env.HOME, ".cargo", "bin" ] | path join)
-let extra_paths = [ $cargo_bin ]
+mut extra_paths = [ $cargo_bin ]
+
+$extra_paths = (
+    ([$env.NUPM_HOME "scripts"] | path join)
+    | prepend $extra_paths
+)
 
 $env.PATH = ($env.PATH | split row (char esep) | prepend $extra_paths)
 
