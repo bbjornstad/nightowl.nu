@@ -16,9 +16,9 @@
 #You should have received a copy of the GNU General Public License along with
 #this program. If not, see <https://www.gnu.org/licenses/>.
 
-# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-# * Nushell Configuration
-#   =====================
+# ╓──────────────────────────────────────────────────────────────────────╖
+# ║ * Nushell Configuration *                                            ║
+# ╙──────────────────────────────────────────────────────────────────────╜
 # * nushell is a modern shell, written in Rust for speed, safety, and
 #   efficiency, and designed from the ground-up to make moving data around and
 #   between shell commands in a straightforward process
@@ -34,27 +34,36 @@
 #   POSIX-compliant, and hence some commands might have unexpected behavior, if
 #   they were expecting such compliance.
 
-# ** Section::Themes:
-# ===================
-# This section defines the possible selections of theme that can be used in
-# nushell. Mostly, we use a dark theme for consistency across applications
-# and to keep eye-strain down, but these are just the default themes given by
+# ╓                                                                      ╖
+# ║ ** Section::Themes **                                                ║
+# ╙                                                                      ╜
+# This section defines the possible selections of theme that can be used
+# nushell. Mostly, we use a dark theme for consistency across applications and
+# to keep eye-strain down, but these are just the default themes given by
 # nushell and includes a light version too.
 #
 # It should be noted that these themes namely define the coloration behavior
 # with respect to things that should be colored in the terminal, but does not
 # set the actual color values themselves, as those are instead handled with
-# Wezterm
+# Wezterm. Unless you specifically set the theme using environment variables.
 #
 # For more information on defining custom themes, see
 # https://www.nushell.sh/book/coloring_and_theming.html
 # And here is the theme collection
 # https://github.com/nushell/nu_scripts/tree/main/themes
-# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+# ─[ custom theme directory ]───────────────────────────────────────────────
+let custom_themes = ([$nu.default-config-dir "themes"] | path join)
+
+# ╓                                                                      ╖
+# ║ basic themes                                                         ║
+# ╙                                                                      ╜
+# these themes are useable across different terminal color schemes, without
+# needing to make any adjustments on the fly.
 let dark_theme = {
     # color for nushell primitives
     separator: white
-    # no fg, no bg, attr none effectively turns this off
+    # no fg, no bg, attr none effectively turns this off $env.NU_L
     leading_trailing_space_bg: { attr: n }
     header: green_bold
     empty: blue
@@ -223,9 +232,83 @@ let light_theme = {
     shape_vardecl: purple
 }
 
-# External completer example
-let carapace_completer = {|spans|
-    carapace $spans.0 nushell $spans | from json
+# first, some configurations that can be expressed in environment variables
+# prior
+# let use_explicit_theme = ("NIGHTSHELL_NU_EXPLICIT_THEME" in $env)
+# let nu_theme = if (not $use_explicit_theme) {
+#     if ("NIGHTSHELL_NU_STYLE" in $env) {
+#         $env.NIGHTSHELL_NU_STYLE
+#     } else {
+#         "dark"
+#     }
+# } else {
+#     $env.NIGHTSHELL_NU_EXPLICIT_THEME
+# }
+#
+# def style-completions [] {
+#     ["light" "dark"]
+# }
+#
+# def load-external-theme [
+#     theme?: string
+#     theme-dir: directory=(["share", "themes"] | path join)
+# ] {
+#
+#     use ([$nu.default-config-dir $theme_dir $theme] | path join)
+# }
+#
+# def get-theme [
+#     theme?: string
+#     --override-bg: string@style-completions
+# ] {
+#     if $theme == "dark" {
+#         $dark_theme
+#     } else if $theme == "light" {
+#         $light_theme
+#     } else {
+#         use (
+#             [$nu.default-config-dir "share" "themes" $nu_theme]
+#             | path join
+#             )
+#     }
+# }
+
+let fish_completer = {|spans: list<string>|
+    fish --command $'complete "--do-complete=(...$spans | str join " ")"'
+    | $"value(char tab)description(char newline)" + $in
+    | from tsv --flexible --no-infer
+}
+
+let carapace_completer = { |spans: list<string>|
+    carapace $spans.0 nushell ...$spans
+    | from json
+    | if ($in
+        | default []
+        | where value == $"($spans | last)ERR"
+        | is-empty) { $in } else { null }
+}
+
+let external_completer = { |spans: list<string>|
+    # if the current command is an alias, get it's expansion
+    let expanded_alias = scope aliases
+    | where name == $spans.0
+    | get -i 0
+    | get -i expansion
+
+    let spans = if $expanded_alias != null {
+        $spans
+        | skip 1
+        | prepend ($expanded_alias | split row ' ' | take 1)
+    } else {
+        $spans
+    }
+
+    match $spans.0 {
+        nu => $fish_completer
+        git => $fish_completer
+        asdf => $fish_completer
+        _ => $carapace_completer
+    } | do $in $spans
 }
 
 $env.GPG_TTY = (tty)
@@ -272,17 +355,15 @@ $env.config = {
         exit_esc: true
 
         command_bar_text: 'foreground'
-        # command_bar: {fg: '#C4C9C6' bg: '#223311' }
 
         status_bar_background: {fg: 'background' bg: 'foreground' }
-        # status_bar_text: {fg: '#C4C9C6' bg: '#223311' }
 
         highlight: {bg: 'yellow' fg: 'black' }
 
         status: {
-            # warn: {bg: 'yellow', fg: 'blue'}
-            # error: {bg: 'yellow', fg: 'blue'}
-            # info: {bg: 'yellow', fg: 'blue'}
+            warn: { fg: 'yellow'}
+            error: { fg: 'red'}
+            info: { fg: 'blue'}
         }
 
         try: {
@@ -317,7 +398,7 @@ $env.config = {
         }
 
         config: {
-            cursor_color: {bg: 'yellow' fg: 'black' }
+            # cursor_color: {bg: 'yellow' fg: 'black' }
 
             # border_color: white
             # list_color: green
@@ -356,7 +437,7 @@ $env.config = {
             # omitting some options
             max_results: 100
             # see above carapace completer
-            completer: $carapace_completer
+            completer: $external_completer
         }
     }
     filesize: {
@@ -378,7 +459,7 @@ $env.config = {
         vi_normal: blink_block
     }
     # if you want a light theme, replace `$dark_theme` to `$light_theme`
-    color_config: $dark_theme
+    color_config: $light_theme,
     use_grid_icons: true
     # always, never, number_of_rows, auto
     footer_mode: "25"
@@ -689,23 +770,7 @@ $env.config.hooks.env_change.PWD = ($env.config.hooks.env_change.PWD
 # command line.
 
 # this is provided by nushell
-source ($nu.default-config-dir | path join zoxide.nu)
-
-# Section::RSP:
-# =============
-# iykyk
-use ~/prj/rspn/defrspn.nu rsp
-use ~/prj/rspn/defrspn.nu rspff
-
-# Section::dotcandyd:
-# ===================
-# these are some of the more important definitions that we need to make sure are
-# present in the shell. They define the candy alias, which is what I use to
-# manage my system configuration. The first is a simple alias to the required
-# call to git, the second is a custom-command defined as a wrapper around a call
-# to the external git tool
-use ($nu.default-config-dir | path join alias_candy.nu) candy
-use ($nu.default-config-dir | path join alias_candy.nu) nucandy
+source ([$nu.default-config-dir "external" "zoxide.nu"] | path join)
 
 source ($nu.default-config-dir | path join aliases.nu)
 
@@ -713,7 +778,7 @@ source ($nu.default-config-dir | path join aliases.nu)
 # ============
 # this sets up the cd-on-quit behavior for nnn, namely by defining the new,
 # correct invocation of nnn to be simply `n`.
-source ($nu.default-config-dir | path join nnn-quitcd.nu)
+source ([$nu.default-config-dir "external" "nnn-quitcd.nu"] | path join)
 
 # Section::broot
 # ==============
@@ -726,12 +791,21 @@ source /home/ursa-major/.config/broot/launcher/nushell/br
 # ======================
 # this sets up some custom directories that are used to hold things like
 # downloaded scripts, custom completions, externs, etc.
-use core *
-use completions ficus *
-use utils *
-use share *
+export use core *
+export use completions *
+export use libstd *
+# use utils *
 
-let completions_list = (glob ([$nu.default-config-dir completions *] | path join))
+# Section::dotcandyd:
+# ===================
+# these are some of the more important definitions that we need to make sure are
+# present in the shell. They define the candy alias, which is what I use to
+# manage my system configuration. The first is a simple alias to the required
+# call to git, the second is a custom-command defined as a wrapper around a call
+# to the external git tool
+# export use core alias_candy
+
+# let completions_list = (glob ([$nu.default-config-dir completions *] | path join))
 
 # Section::gpg fix
 # ================
