@@ -39,7 +39,7 @@ const gpg_keys = {
     ybkyA_primary: "8361328584A414FE"
 }
 
-(kc add-keys
+(kctl add
     --ssh-keys ($ssh_keys | values)
     --gpg-keys ($gpg_keys | values)
     --inheritance "any-once")

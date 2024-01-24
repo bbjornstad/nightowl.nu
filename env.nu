@@ -8,15 +8,17 @@
 # ╒══════════════════════════════════════════════════════════════════════╕
 #   env.nu:
 # └──────────────────────────────────────────────────────────────────────┘
-#   Setting up the nushell environment: this configuration file is run BEFORE
-#   the config.nu file that is adjacent to this one. This means it is possible
-#   to add definitions prior to when the final config.nu file is parsed and
-#   evaluated by the shell.
+# Setting up the nushell environment: this configuration file is run BEFORE the
+# config.nu file that is adjacent to this one. This means it is possible to add
+# definitions prior to when the final config.nu file is parsed and evaluated by
+# the shell.
 #
-#   This file is mostly used to define environment variables using the let-env
-#   syntax. Technically though, we can import other files if needed?
+# This file is mostly used to define environment variables using the let-env
+# syntax. Technically though, we can import other files if needed?
+
 
 # ─[ Section::Prompt: ]─────────────────────────────────────────────────────
+
 # the following section defines the commands that are used to generate the
 # prompt when using nushell on the terminal
 #

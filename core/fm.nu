@@ -1,66 +1,58 @@
 #!/usr/bin/env nu
 # vim: set ft=nu:
+
 def home-path [] {
     $env.HOME
 }
 
-def join-home [...args] {
+export def join-home [...args] {
     [$env.HOME ...$args] | path join
 }
 
-def edit-at-completion-bg [] {
-    ["dark", "light"]
+def edit-at-bg-completion [] {
+    ["dark" "light"]
+}
+
+def nvim-scheme-registry-completion [] {
+    [
+        "kanagawa"
+        "deepwhite"
+        "nano-theme"
+        "nightfox"
+        "dawnfox"
+        "nightcity-afterlife"
+        "rose-pine"
+        "newpaper"
+    ]
 }
 
 export def edit-at [
     loc?: directory
     ...args: path
-    --background (-b): string@edit-at-completion-bg
-    --colorscheme (-c): string="kanagawa"
+    --background (-b): string@edit-at-bg-completion
+    --colorscheme (-c): string@nvim-scheme-registry-completion
 ] {
-    cd ([(home-path) $loc] | path join | inspect); with-env {
-        NIGHTOWL_BACKGROUND: $background,
-        NIGHTOWL_COLORSCHEME: $colorscheme
+    let nubackground = if ($background | is-empty) {
+        $env.NIGHTOWL_BACKGROUND
+    } else {
+        $background
+    }
+    let nucolorscheme  = if ($colorscheme | is-empty) {
+        $env.NIGHTOWL_COLORSCHEME
+    } else {
+        $colorscheme
+    }
+    cd ([(home-path) $loc] | path join); with-env {
+        NIGHTOWL_BACKGROUND: $nubackground
+        NIGHTOWL_COLORSCHEME: $nucolorscheme
     } { nvim ...$args }
 }
-
-# the fabled neovim
-export extern nvim [
-    ...args: path       # file arguments to open nvim
-    -t: string          # [tag]: a tag, looked up in tags file and the match is chosen.
-    -q: path            # [errorfile]: open in quickfix mode with the name of an errorfile
-    --cmd: string       # [cmd]: Execute <cmd> before any config
-    -c: string          # [cmd]: Execute <cmd> after config and first file
-    -l:  string         # [script]: Execute Lua <script> (with optional args)
-    -S: string          # [session]: Source <session> after loading the first file
-    -s: string          # [scriptin]: Read Normal mode commands from <scriptin>
-    -u: path            # [cfgfile]: Use config [cfgfile]
-    -d                  # Diff mode
-    --es                # Silent (batch) mode
-    --help (-h)         # Print this help message
-    -i: path            # [shada]: Use shada file [shada]
-    -n                  # No swap file, use memory only
-    -o: int             # [N]: Open N windows (default: one per file)
-    -O: int             # [N]: Open N vertical windows (default: one per file)
-    -p: int             # [N]: Open N tab pages (default: one per file)
-    -R                  # Read-only (view) mode
-    --version (-v)      # Print version information
-    -V: int             # [level]: Verbose [level]
-    --api-info          # Write msgpack-encoded API metadata to stdout
-    --clean             # "Factory defaults" (skip user config and plugins, shada)
-    --embed             # Use stdin/stdout as a msgpack-rpc channel
-    --headless          # Don't start a user interface
-    --listen: string    # [address]: Serve RPC API from [address]
-    --remote            # Execute commands remotely on a server
-    --server: string    # [server]: Specify RPC [server] to send commands to
-    --startuptime: path # [file]: Write startup timing messages to [file]
-]
 
 export module cfm {
     export def main [
         ...args: path
-        --background (-b): string@edit-at-completion-bg
-        --colorscheme (-c): string
+        --background (-b): string@edit-at-bg-completion
+        --colorscheme (-c): string@nvim-scheme-registry-completion
     ] {
         edit-at (join-path ".config") ...$args
     }
@@ -92,9 +84,6 @@ export module prj {
     export def dot [...args: path] {
         edit-at (["prj" "dotcandyd"] | path join) ...$args
     }
-    export def org [...args: path] {
-        edit-at "org" ...$args
-    }
     export def cq [...args: path] {
         edit-at (["prj" "cosmic-quote"] | path join) ...$args
     }
@@ -114,5 +103,37 @@ export module prj {
     }
 }
 
+export module org  {
+    export def main [...args: path] {
+        edit-at "org" ...$args
+    }
+
+    export def "journal" [...args: path] {
+        edit-at (["org" "journal"] | path join) ...$args
+    }
+
+    export def "notes" [...args: path] {
+        edit-at (["org" "notes"] | path join) ...$args
+    }
+
+    export def "mail" [...args: path] {
+        edit-at (["org" "prsc" "email"] | path join) ...$args
+    }
+
+    export def "home" [
+        ...args: path
+        --thismonth(-m)
+        --subdirectory(-s): directory
+    ] {
+        mut pathelem = ["org" "home"]
+        if not ($subdirectory | is-empty) {
+            $pathelem = ($pathelem | append $subdirectory)
+        }
+        edit-at ($pathelem | compact | path join) ...$args
+    }
+}
+
+
 export use cfm
 export use prj
+export use org

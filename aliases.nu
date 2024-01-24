@@ -1,4 +1,5 @@
 #!/usr/bin/env nu
+# vim: set ft=nu:
 
 #SPDX-FileCopyrightText: 2024 Bailey Bjornstad | ursa-major <bailey@bjornstad.dev>
 #SPDX-License-Identifier: GPL-3.0-only
@@ -80,7 +81,7 @@ export alias find = fd
 
 export alias cd = __zoxide_z
 
-# ─[ Section: Manpager Woes ]───────────────────────────────────────────────
+# ─[ Manpager Woes ]────────────────────────────────────────────────────────
 # add the ability to switch manpagers with an easy alias; helpful for when nvim
 # is down and we still need to read manual pages.
 export def sman [
@@ -91,4 +92,15 @@ export def sman [
     }
 }
 
-
+# ─[ neovim debugging mode ]────────────────────────────────────────────────
+export def bugvim [] {
+    (^valgrind
+     --leak-check=full
+     --show-leak-kinds=all
+     --track-origins=yes
+     --read-var-info=yes
+     --verbose
+     --trace-children=yes
+     --vgdb=full
+     nvim)
+}

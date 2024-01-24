@@ -14,14 +14,14 @@ def genkey-complete-username [] {
 }
 
 export def --env genkey-ssh [
-    --type (-t): string@(genkey-complete-type),
-    --host (-H): string@(genkey-complete-host),
-    --username (-u): string@(genkey-complete-username),
-    --filename_override (-f): path,
-    --pin-verify (-p): bool = true,
-    --touch-verify (-T): bool = true,
-    --comment (-C): string,
-    --use-resident (-r): bool = true,
+    --type (-t): string@genkey-complete-type
+    --host (-H): string@genkey-complete-host
+    --username (-u): string@genkey-complete-username
+    --filename_override (-f): path
+    --pin-verify (-p): bool = true
+    --touch-verify (-T): bool = true
+    --comment (-C): string
+    --use-resident (-r): bool = true
 ] {
     let yubikey_mapper = {
         "22522649": "ybkyA-primary",

@@ -1,8 +1,8 @@
 #!/usr/bin/env nu
 # vim: set ft=nu:"
 
-module core/kc.nu
-export use kc
+module core/kctl.nu
+export use kctl
 
 module core/fm.nu
 export use fm *
@@ -12,3 +12,6 @@ export use bf *
 
 module core/alias_candy.nu
 export use alias_candy *
+
+module core/rsp.nu
+export use rsp *
