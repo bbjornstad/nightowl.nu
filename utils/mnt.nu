@@ -5,7 +5,7 @@ def cryptsetup-types [] {
     [ "luks", "luks2", "_luks", "plain" ]
 }
 
-export def main [
+export def --wrapped main [
     disk: path
     mountpoint: directory,
     --lukstype: string@cryptsetup-types,
@@ -14,6 +14,6 @@ export def main [
     sudo cryptsetup --type $lukstype --
 }
 
-export def "mnt callisto" [] {
-    
+export def "main callisto" [] {
+
 }
