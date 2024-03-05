@@ -1,0 +1,5 @@
+//! Pest Parser Grammar for Help Text Output of commandline programs
+// vim: set ft=pest:
+
+/// matches any character that is valid help-text output.
+char = { ASCII_ALPHANUMERIC | NEWLINE | PUNCTUATION | SYMBOL }
