@@ -327,7 +327,7 @@ $env.config = {
 
     explore: {
         help_banner: true
-        exit_esc: true
+        exit_esc: false
 
         command_bar_text: 'foreground'
 
@@ -361,7 +361,7 @@ $env.config = {
             show_head: true
             show_index: true
 
-            selected_cell: {fg: 'white', bg: '#777777'}
+            selected_cell: {fg: 'foreground', bg: '#777777'}
             selected_row: {fg: 'yellow', bg: '#C1C2A3'}
             selected_column: blue
 
@@ -383,7 +383,7 @@ $env.config = {
     history: {
         # Session has to be reloaded for this to take effect
         max_size: 10000
-        sync_on_enter: false
+        sync_on_enter: true
         # Enable to share history between multiple sessions, else you have to
         # close the session to write history to file
         file_format: "sqlite"
@@ -402,7 +402,7 @@ $env.config = {
         # set this to false to prevent partial filling of the prompt
         partial: true
         # prefix or fuzzy
-        algorithm: "prefix"
+        algorithm: "fuzzy"
         external: {
             # set to false to prevent nushell looking into $env.PATH to find
             # more suggestions, `false` recommended for WSL users as this look
@@ -486,7 +486,7 @@ $env.config = {
         {
             name: completion_menu
             only_buffer_difference: false
-            marker: "| "
+            marker: "󰺾 "
             type: {
                 layout: columnar
                 columns: 4
@@ -496,15 +496,15 @@ $env.config = {
                 col_padding: 2
             }
             style: {
-                text: green
-                selected_text: green_reverse
-                description_text: yellow
+                text: blue
+                selected_text: blue_reverse
+                description_text: light_red
             }
         }
         {
             name: history_menu
             only_buffer_difference: true
-            marker: "? "
+            marker: "󰔟 "
             type: {
                 layout: list
                 page_size: 10
@@ -512,13 +512,13 @@ $env.config = {
             style: {
                 text: green
                 selected_text: green_reverse
-                description_text: yellow
+                description_text: light_red
             }
         }
         {
             name: help_menu
             only_buffer_difference: true
-            marker: "? "
+            marker: "󰮦 "
             type: {
                 layout: description
                 columns: 4
@@ -532,7 +532,7 @@ $env.config = {
             style: {
                 text: green
                 selected_text: green_reverse
-                description_text: yellow
+                description_text: light_blue
             }
         }
         # Example of extra menus created using a nushell source
@@ -541,7 +541,7 @@ $env.config = {
         {
             name: commands_menu
             only_buffer_difference: false
-            marker: "/ "
+            marker: "󰛕 "
             type: {
                 layout: columnar
                 columns: 4
@@ -551,7 +551,7 @@ $env.config = {
             style: {
                 text: green
                 selected_text: green_reverse
-                description_text: yellow
+                description_text: light_blue
             }
             source: { |buffer, position|
                 $nu.scope.commands
@@ -562,7 +562,7 @@ $env.config = {
         {
             name: vars_menu
             only_buffer_difference: true
-            marker: "$ "
+            marker: "󰫧 "
             type: {
                 layout: list
                 page_size: 10
@@ -570,7 +570,7 @@ $env.config = {
             style: {
                 text: green
                 selected_text: green_reverse
-                description_text: yellow
+                description_text: light_blue
             }
             source: { |buffer, position|
                 $nu.scope.vars
@@ -580,21 +580,42 @@ $env.config = {
             }
         }
         {
+            name: cd_menu
+            only_buffer_difference: true
+            marker: " "
+            type: {
+                layout: list
+                page_size: 10
+            }
+            style: {
+                text: green
+                selected_text: green_reverse
+                description_text: light_red
+            }
+            source: { |buffer, position|
+                ls
+                | where (type == dir) and (name ~= $buffer)
+                | fzf --no-multi --cycle
+                | lines
+                | each { |it| {value: $it.name description: $it.name} }
+            }
+        }
+        {
             name: commands_with_description
             only_buffer_difference: true
-            marker: "/ "
+            marker: "󱍁 "
             type: {
                 layout: description
-                columns: 4
+                columns: 2
                 col_width: 20
-                col_padding: 2
+                col_padding: 4
                 selection_rows: 4
                 description_rows: 10
             }
             style: {
                 text: green
                 selected_text: green_reverse
-                description_text: yellow
+                description_text: light_blue
             }
             source: { |buffer, position|
                 $nu.scope.commands
@@ -617,7 +638,7 @@ $env.config = {
             }
         }
         {
-            name: completion_previous
+            name: default_menu_previous
             modifier: shift
             keycode: backtab
             # Note: You can add the same keybinding to all modes by using a list
@@ -625,45 +646,71 @@ $env.config = {
             event: { send: menuprevious }
         }
         {
+            name: menu_up
+            modifier: control
+            keycode: char_k
+            mode: [vi_insert vi_normal]
+            event: { send: menuup }
+        }
+        {
+            name: menu_down
+            modifier: control
+            keycode: char_j
+            mode: [vi_insert vi_normal]
+            event: { send: menudown }
+        }
+        {
+            name: menu_left
+            modifier: control
+            keycode: char_h
+            mode: [vi_insert vi_normal]
+            event: { send: menuleft }
+        }
+        {
+            name: menu_right
+            modifier: control
+            keycode: char_l
+            mode: [vi_insert vi_normal]
+            event: { send: menuright }
+        }
+        {
+            name: menu_next
+            modifier: control
+            keycode: char_n
+            mode: [vi_normal vi_insert]
+            event: { send: menunext }
+        }
+        {
+            name: menu_previous
+            modifier: control
+            keycode: char_p
+            mode: [vi_normal vi_insert]
+            event: { send: menuprevious }
+        }
+        {
             name: history_menu
             modifier: control
             keycode: char_r
-            mode: emacs
+            mode: [vi_normal vi_insert]
             event: { send: menu name: history_menu }
         }
         {
             name: next_page
-            modifier: control
-            keycode: char_x
-            mode: emacs
+            modifier: shift_control
+            keycode: char_n
+            mode: [vi_normal vi_insert]
             event: { send: menupagenext }
         }
         {
-            name: undo_or_previous_page
-            modifier: control
-            keycode: char_z
-            mode: emacs
-            event: {
-                until: [
-                    { send: menupageprevious }
-                    { edit: undo }
-                ]
-            }
-        }
-        {
-            name: yank
-            modifier: control
-            keycode: char_y
-            mode: emacs
-            event: {
-                until: [
-                    {edit: pastecutbufferafter}
-                ]
-            }
+            name: previous_page
+            modifier: shift_control
+            keycode: char_p
+            mode: [vi_normal vi_insert]
+            event: { send: menupageprevious }
         }
         {
             name: unix-line-discard
-            modifier: control
+            modifier: shift_control
             keycode: char_u
             mode: [emacs, vi_normal, vi_insert]
             event: {
@@ -674,7 +721,7 @@ $env.config = {
         }
         {
             name: kill-line
-            modifier: control
+            modifier: shift_control
             keycode: char_k
             mode: [emacs, vi_normal, vi_insert]
             event: {
@@ -693,7 +740,7 @@ $env.config = {
         }
         {
             name: vars_menu
-            modifier: alt
+            modifier: control
             keycode: char_o
             mode: [emacs, vi_normal, vi_insert]
             event: { send: menu name: vars_menu }
@@ -705,9 +752,18 @@ $env.config = {
             mode: [emacs, vi_normal, vi_insert]
             event: { send: menu name: commands_with_description }
         }
+        {
+            name: cd_menu
+            modifier: control
+            keycode: char_z
+            mode: [vi_normal vi_insert]
+            event: { send: menu name: cd_menu }
+        }
+
     ]
 }
 
+const CONFIG_DIR = (["~", ".config"] | path join)
 
 # ─[ Section: direnv: ]─────────────────────────────────────────────────────
 
@@ -716,13 +772,12 @@ $env.config = {
 # able to auto-update this when needed.
 $env.DIRENV_LOG_FORMAT = ""
 $env.config.hooks.env_change.PWD = ($env.config.hooks.env_change.PWD
-    | append (source ~/.config/nushell/hooks/direnv.nu)
-)
-
-# ─[ Section::atuin: ]──────────────────────────────────────────────────────
-
-# source ~/.local/share/atuin/init.nu
-
+    | append (
+        source (
+            [$nu.default-config-dir "hooks" "direnv.nu"]
+            | path join)
+        )
+    )
 
 # ─[ Section::Zoxide: Autojump Manager ]────────────────────────────────────
 
@@ -784,8 +839,13 @@ export use utils *
 # to the external git tool
 # export use core alias_candy
 
-
 # ─[ Section::gpg fix ]─────────────────────────────────────────────────────
 
 # to make gpg agent work correctly
 $env.GPG_TTY = (tty)
+
+# ─[ section::starship ]──────────────────────────────────────────────────
+
+use ~/.cache/starship/init.nu
+
+# do --env {|| bash -c eval '$(zellij setup --generate-auto-start bash)'}

@@ -89,10 +89,10 @@ def create_right_prompt [] {
 # overwriting the left-prompt to use Oh-My-Posh, a framework for shell
 # configuration and theming. Because Oh-My-Posh is fully-featured already, we
 # don't need to assign any other prompts to the left or right sides here.
-$env.PROMPT_COMMAND = {|| (
-    oh-my-posh prompt print primary
-    --config ~/.config/posh/prompts/ursadipt.omp.json
-) }
+$env.PROMPT_COMMAND = {||
+    # oh-my-posh prompt print primary
+    # --config ~/.config/posh/prompts/ursadipt.omp.json
+}
 $env.PROMPT_COMMAND_RIGHT = {|| }
 
 # The prompt indicators are environmental variables that represent the state of
