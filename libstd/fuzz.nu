@@ -3,8 +3,12 @@ export extern fzf [
 ]
 
 export module fz {
-    export def main [] {
-
+    export def --wrapped main [
+        input: closure
+        output: closure
+        ...fzf_args: string
+    ] {
+        do $input | ^fzf ...$fzf_args | do $output
     }
 }
 
