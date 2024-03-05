@@ -69,44 +69,146 @@ export extern keychain [
     --version (-V)                # show version information
 ]
 
-export def main [
+export def --wrapped main [
     --agents (-a): list<string>
     --fp (-f)
+    ...args: string
 ] {
-    if ($fp | is-empty) {
-        ^keychain --agents ($agents | str join ",") --list
+    if (not $fp) {
+        ^keychain --agents ($agents | str join ",") --list ...$args
     } else {
-        ^keychain --agents ($agents | str join ",") --list-fp
+        ^keychain --agents ($agents | str join ",") --list-fp ...$args
     }
 }
 
-export def --env add [
+export def --env import [] {
+    let keyout = $in
+    ($keyout
+     | lines -s
+     | parse '{varname}={varval}; export {_}'
+     | select varname varval
+     | transpose -r
+     | into record
+     | load-env)
+}
+
+export def --wrapped revoke [
+    --stop (-k): string
+    --keychain-home (-H): glob='~/.keychain'
+    --targets (-s): glob='*'
+    --noclear (-c)
+    ...args: string
+] {
+    if ($stop != null) or (not $noclear) {
+        let revargs = (
+                (if ($stop != null) { ['--stop' $stop] } else { [] })
+                | append
+                (if (not $noclear) { ['--clear' ] } else { [] })
+                )
+            (^keychain ...$revargs ...$args)
+    }
+    let removetarget = (glob ([$keychain_home $targets] | path join))
+        ($removetarget
+         | par-each { |it| $it | rm $it })
+}
+
+export def --env to-env [
+    --ssh-keys (-s): list<string>
+    --gpg-keys (-g): list<string>
+    --ssh-name (-S): string='URSA_SSH_KEYS'
+    --gpg-name (-G): string='URSA_GPG_KEYS'
+] {
+    load-env {
+        $ssh_name: ($ssh_keys | uniq)
+        $gpg_name: ($gpg_keys | uniq)
+    }
+}
+
+export def --env from-env [
+    --ssh-name (-S): string='URSA_SSH_KEYS'
+    --gpg-name (-G): string='URSA_GPG_KEYS'
+    --quiet (-q)
+] {
+    let ssh_keys = ($env | get $ssh_name)
+    let gpg_keys = ($env | get $gpg_name)
+
+    (keval
+     --ssh-keys $ssh_keys
+     --gpg-keys $gpg_keys
+     --quiet $quiet) | import
+}
+
+export def --wrapped keval [
     --ssh-keys (-s): list<string> # ids of ssh keys to add via keychain
     --gpg-keys (-g): list<string> # ids of gpg keys to add via keychain
-    --inheritance (-i): string="any-once" # inherits behavior for keychain
+    ...args: string
 ] {
     mut agents = []
-    mut keys = []
+    let final_ssh = if $ssh_keys == null {
+        []
+    } else {
+        $ssh_keys
+    }
 
-    if not ($ssh_keys | is-empty) {
+    let final_gpg = if $gpg_keys == null {
+        []
+    } else {
+        $gpg_keys
+    }
+    if not ($final_ssh | is-empty) {
         $agents = ($agents | append "ssh")
     }
-    if not ($gpg_keys | is-empty) {
+    if not ($final_gpg | is-empty) {
         $agents = ($agents | append "gpg")
     }
-    $keys = $keys
-        | append $ssh_keys
-        | append $gpg_keys
 
     (^keychain
-     --inherit $inheritance
-     --agents ($agents | str join ",")
-     --systemd
-     --eval ...$ssh_keys ...$gpg_keys)
-    | lines -s
-    | parse '{varname}={varval}; export {_};'
-    | select varname varval
-    | transpose -r
-    | into record
-    | load-env
+      --agents ($agents | str join ",")
+      ...$args
+      ...$final_ssh
+      ...$final_gpg)
+}
+
+export def --env --wrapped start [
+    --ssh-keys (-s): list<string>
+    --gpg-keys (-g): list<string>
+    --ssh-env (-S): string='URSA_SSH_KEYS'
+    --gpg-env (-S): string='URSA_GPG_KEYS'
+    --from-env (-e)
+    --nosystemd
+    --noeval
+    ...args: string
+] {
+    let host = (run-external 'uname' '-n')
+    let sshpath = ([$env.HOME, '.keychain' $"($host)-sh"] | path join)
+    let gpgpath = ([$env.HOME, '.keychain' $"($host)-sh-gpg"] | path join)
+    let startargs = (if not $noeval {
+        (if not $nosystemd {
+            ['--systemd']
+        } else { [] })
+        | prepend ['--eval']
+    } else {
+        []
+    })
+
+    if (($env.SSH_AUTH_SOCK?) != null and ($env.SSH_AGENT_PID?) != null) {
+        # fix up with any previous socket definitions, etc
+        if ($sshpath | path exists) {
+            open $sshpath | import
+        }
+        if ($gpgpath | path exists) {
+            open $gpgpath | import
+        }
+    }
+
+    let envkeys = if $from_env {
+        (from-env --ssh-name $ssh_env --gpg-name $gpg_env)
+    } else {
+        []
+    }
+    (keval
+     ...$startargs
+     ...$args
+     --ssh-keys $ssh_keys
+     --gpg-keys $gpg_keys) | import
 }

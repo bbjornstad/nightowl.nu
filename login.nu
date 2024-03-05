@@ -1,4 +1,5 @@
 #!/usr/bin/env nu
+# vim: set ft=nu:
 
 #SPDX-FileCopyrightText: 2024 Bailey Bjornstad | ursa-major <bailey@bjornstad.dev>
 #SPDX-License-Identifier: GPL-3.0-only
@@ -35,11 +36,10 @@ const ssh_keys = {
 }
 
 const gpg_keys = {
-    passwordstore: "D67D6455A0382752"
-    ybkyA_primary: "8361328584A414FE"
+     passwordstore: "D67D6455A0382752"
+     ybkyA_primary: "8361328584A414FE"
 }
 
-(kctl add
-    --ssh-keys ($ssh_keys | values)
-    --gpg-keys ($gpg_keys | values)
-    --inheritance "any-once")
+# (kctl to-env --ssh-keys ($ssh_keys | values | uniq) --gpg-keys ($gpg_keys | values | uniq))
+
+# (kctl start --inherit any --from-env)
