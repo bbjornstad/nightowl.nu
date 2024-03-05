@@ -1,4 +1,4 @@
 #!/usr/bin/env nu
 # vim: set ft=nu:
 
-export use "/home/ursa-major/prj/rspn/defrspn.nu"
+export use "/home/ursa-major/prj/rspn/rsp.nu" *

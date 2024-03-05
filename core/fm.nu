@@ -1,15 +1,7 @@
 #!/usr/bin/env nu
 # vim: set ft=nu:
 
-def home-path [] {
-    $env.HOME
-}
-
-export def join-home [...args] {
-    [$env.HOME ...$args] | path join
-}
-
-def edit-at-bg-completion [] {
+def nvim-background-completion [] {
     ["dark" "light"]
 }
 
@@ -26,102 +18,188 @@ def nvim-scheme-registry-completion [] {
     ]
 }
 
-export def edit-at [
+export def --wrapped edit-at [
     loc?: directory
-    ...args: path
-    --background (-b): string@edit-at-bg-completion
+    ...args: string # optional neovim configuration/startup flags and arguments
+    --background (-b): string@nvim-background-completion
     --colorscheme (-c): string@nvim-scheme-registry-completion
 ] {
-    let nubackground = if ($background | is-empty) {
+    let nubackground = if ($background == null) {
         $env.NIGHTOWL_BACKGROUND
     } else {
         $background
     }
-    let nucolorscheme  = if ($colorscheme | is-empty) {
+    let nucolorscheme  = if ($colorscheme == null) {
         $env.NIGHTOWL_COLORSCHEME
     } else {
         $colorscheme
     }
-    cd ([(home-path) $loc] | path join); with-env {
+    let location = if ($loc == null) {
+        $env.HOME
+    } else {
+        $loc
+    }
+    with-env {
+        PWD: $location
         NIGHTOWL_BACKGROUND: $nubackground
         NIGHTOWL_COLORSCHEME: $nucolorscheme
-    } { nvim ...$args }
+    } { do { nvim ...$args } | complete }
 }
 
 export module cfm {
-    export def main [
-        ...args: path
-        --background (-b): string@edit-at-bg-completion
-        --colorscheme (-c): string@nvim-scheme-registry-completion
+    # edit configuration files
+    export def --wrapped main [
+        ...args: string # optional neovim configuration/startup flags and arguments
     ] {
-        edit-at (join-path ".config") ...$args
+        (edit-at
+         $env.XDG_CONFIG_HOME
+         ...$args)
     }
-    export def neovim [
-        ...args: path
+
+    # edit neovim configuration files
+    export def --wrapped neovim [
+        ...args: string # optional neovim configuration/startup flags and arguments
     ] {
-        edit-at (join-home ".config" "nvim"]) ...$args
+        let loc = (pf join-config "nvim")
+        (edit-at
+         $loc
+         ...$args)
     }
-    export def nushell [
-        ...args: path
+
+    # edit nushell configuration files
+    export def --wrapped nushell [
+        ...args: string # optional neovim configuration/startup flags and arguments
     ] {
-        edit-at (join-home ".config" "nushell") ...$args
+        (edit-at
+         (pf join-config  "nushell")
+         ...$args)
     }
-    export def wez [
-        ...args: path
+
+    # edit wezterm configuration files
+    export def --wrapped wez [
+        ...args: string # optional neovim configuration/startup flags and arguments
     ] {
-        edit-at (join-home ".config" "wezterm") ...$args
+        (edit-at
+         (pf join-config "wezterm")
+         ...$args)
     }
 }
 
 export module prj {
-    export def main [...args: path] {
-        edit-at "prj" ...$args
+    # work on projects
+    export def --wrapped main [
+        ...args: string # optional neovim configuration/startup flags and arguments
+    ] {
+        (edit-at
+         (pf join-home "prj")
+         ...$args)
     }
-    export def website [...args: path] {
-        edit-at (["prj" "bjornstad.dev"] | path join) ...$args
-         nvim ...$args
+
+    # work on personal website
+    export def --wrapped website [
+        ...args: string # optional neovim configuration/startup flags and arguments
+    ] {
+        (edit-at
+         (pf join-home "prj" "bjornstad.dev")
+         ...$args)
    }
-    export def dot [...args: path] {
-        edit-at (["prj" "dotcandyd"] | path join) ...$args
-    }
-    export def cq [...args: path] {
-        edit-at (["prj" "cosmic-quote"] | path join) ...$args
-    }
-    export def cg [...args: path] {
 
-        edit-at (["prj" "cosmic-gate"] | path join) ...$args
+   # work on dotcandyd
+    export def --wrapped dot [
+        ...args: string # optional neovim configuration/startup flags and arguments
+    ] {
+        (edit-at
+         (pf join-home "prj" "dotcandyd")
+         ...$args)
     }
-    export def nvim-dev [...args: path] {
-        edit-at (["prj" "nvim-dev"] | path join) ...$args
+
+    # work on cosmic-quote
+    export def --wrapped cq [
+        ...args: string # optional neovim configuration/startup flags and arguments
+    ] {
+        (edit-at
+         (pf join-home "prj" "cosmic-quote")
+         ...$args)
+    }
+
+    # work on cosmic-gate
+    export def --wrapped cg [
+        ...args: string # optional neovim configuration/startup flags and arguments
+    ] {
+        (edit-at
+         (pf join-home "prj" "cosmic-gate")
+         ...$args)
+    }
+
+    # work on personal neovim plugins/mods
+    export def --wrapped nvim-dev [
+        ...args: string # optional neovim configuration/startup flags and arguments
+    ] {
+        (edit-at
+         (pf join-home "prj" "nvim-dev")
+         ...$args)
 
     }
-    export def ficus [...args: path] {
-        edit-at (["prj" "nvim-dev" "ficus.nvim"] | path join) ...$args
+
+    # work on ficus.nvim
+    export def --wrapped ficus [
+        ...args: string # optional neovim configuration/startup flags and arguments
+    ] {
+        (edit-at
+         (pf join-home "prj" "nvim-dev" "ficus.nvim")
+         ...$args)
     }
-    export def funsak [...args: path] {
-        edit-at (["prj" "nvim-dev" "ficus.nvim"] | path join) ...$args
+
+    # work on funsak.nvim
+    export def --wrapped funsak [
+        ...args: string # optional neovim configuration/startup flags and arguments
+    ] {
+        (edit-at
+         (pf join-home "prj" "nvim-dev" "ficus.nvim")
+         ...$args)
     }
 }
 
 export module org  {
-    export def main [...args: path] {
-        edit-at "org" ...$args
+    # edit organizational document entries
+    export def --wrapped main [
+        ...args: string # optional neovim configuration/startup flags and arguments
+    ] {
+        (edit-at
+         (pf join-home "org")
+         ...$args)
     }
 
-    export def "journal" [...args: path] {
-        edit-at (["org" "journal"] | path join) ...$args
+    # edit organizational journal document entries
+    export def --wrapped journal [
+        ...args: string # optional neovim configuration/startup flags and arguments
+    ] {
+        (edit-at
+         (pf join-home "org" "journal")
+         ...$args)
     }
 
-    export def "notes" [...args: path] {
-        edit-at (["org" "notes"] | path join) ...$args
+    # (edit organizational note document entries)
+    export def --wrapped notes [
+        ...args: string # optional neovim configuration/startup flags and arguments
+    ] {
+        (edit-at
+         (pf join-home "org" "notes")
+         ...$args)
     }
 
-    export def "mail" [...args: path] {
-        edit-at (["org" "prsc" "email"] | path join) ...$args
+    # edit organizational email document entries
+    export def --wrapped mail [
+        ...args: string # optional neovim configuration/startup flags and arguments
+    ] {
+        (edit-at
+         (pf join-home "org" "prsc" "email")
+         ...$args)
     }
 
-    export def "home" [
-        ...args: path
+    # edit organizational home document entries
+    export def --wrapped home [
+        ...args: string # optional neovim configuration/startup flags and arguments
         --thismonth(-m)
         --subdirectory(-s): directory
     ] {
@@ -129,7 +207,9 @@ export module org  {
         if not ($subdirectory | is-empty) {
             $pathelem = ($pathelem | append $subdirectory)
         }
-        edit-at ($pathelem | compact | path join) ...$args
+        (edit-at
+         (pf join-home ...($pathelem | compact))
+         ...$args)
     }
 }
 
