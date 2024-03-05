@@ -3,11 +3,13 @@
 # ╓──────────────────────────────────────────────────────────────────────╖
 # ║ Nushell Environment Config File                                      ║
 # ╙──────────────────────────────────────────────────────────────────────╜
+
 # Implemented for nightshell
 
 # ╒══════════════════════════════════════════════════════════════════════╕
 #   env.nu:
 # └──────────────────────────────────────────────────────────────────────┘
+
 # Setting up the nushell environment: this configuration file is run BEFORE the
 # config.nu file that is adjacent to this one. This means it is possible to add
 # definitions prior to when the final config.nu file is parsed and evaluated by
@@ -78,11 +80,8 @@ def create_right_prompt [] {
     [$last_exit_code, (char space), $time_segment] | str join
 }
 
-# ─[ Section::NUPM ]────────────────────────────────────────────────────────
-# defines the location that nupm should take
-$env.NUPM_HOME = ([$nu.default-config-dir "pkg/"] | path join)
-
 # ─[ Section::PromptAssignments: ]──────────────────────────────────────────
+
 # the following assigns defined prompts to the left or right sides of the
 # terminal, where the prompts are allowed to appear.
 #
@@ -135,7 +134,13 @@ $env.ENV_CONVERSIONS = {
     }
 }
 
+# ─[ Section::NUPM ]────────────────────────────────────────────────────────
+
+# defines the location that nupm should take
+$env.NUPM_HOME = ([$nu.default-config-dir "pkg/"] | path join)
+
 # ─[ Section::PATH: ]───────────────────────────────────────────────────────
+
 #   this section updates the configuration to know where to look for external
 #   libraries, binaries, or scripts. In other words, directories to search for
 #   scripts when calling source or use By default,
@@ -177,11 +182,19 @@ $extra_paths = (
 $env.PATH = ($env.PATH | split row (char esep) | prepend $extra_paths)
 
 # ─[ Section::dotcandyd ]───────────────────────────────────────────────────
+
 # the dotcandyd systems home folder here. this is used in the nushell by default
 # and for those who use this program, I would recommend it strongly.
 # configuration definition of the candy cli
 $env.DOTCANDYD_USER_HOME = ($env.HOME | path join ".candy.d")
 
 # ─[ Section::zoxide ]──────────────────────────────────────────────────────
+
 # correctly setup zoxide for nushell
 zoxide init nushell | save -f ~/.config/nushell/zoxide.nu
+
+# ─[ section::Starship ]──────────────────────────────────────────────────
+
+# set up starship prompt
+mkdir ~/.cache/starship
+starship init nu | save -f ~/.cache/starship/init.nu

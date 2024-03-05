@@ -246,6 +246,7 @@ let light_theme = {
 }
 
 # ─[ custom completers ]────────────────────────────────────────────────────
+
 let fish_completer = {|spans: list<string>|
     fish --command $'complete "--do-complete=(...$spans | str join " ")"'
     | $"value(char tab)description(char newline)" + $in
@@ -283,8 +284,6 @@ let external_completer = { |spans: list<string>|
         _ => $carapace_completer
     } | do $in $spans
 }
-
-$env.GPG_TTY = (tty)
 
 
 # ╓                                                                      ╖
@@ -736,31 +735,45 @@ source ([$nu.default-config-dir "external" "zoxide.nu"] | path join)
 
 source ($nu.default-config-dir | path join aliases.nu)
 
-
 # ─[ Section::nnn ]─────────────────────────────────────────────────────────
 
 # this sets up the cd-on-quit behavior for nnn, namely by defining the new,
 # correct invocation of nnn to be simply `n`.
 source ([$nu.default-config-dir "external" "nnn-quitcd.nu"] | path join)
 
+# ─[ Section::weechat ]───────────────────────────────────────────────────
+
+# this sets up weechat by calling the predefined script that I have which
+# defines the new chat command.
+export use ([$nu.default-config-dir "external" "weechat.nu"] | path join) *
+
+# ─[ Section::Zellij ]────────────────────────────────────────────────────
+
+# eventually, this section will hold the call to an external script that will
+# hold the autostart logic for zellij. This does depend somewhat on whether
+# Zellij will stop interrupting my keybindings
 
 # ─[ Section::broot ]───────────────────────────────────────────────────────
 
 # broot is a file manager, a nice view of a file-tree directly in the terminal
 # with a speedy ui and reasonably simple keybindings. this is supposed to hook
 # up to vim, but so far I'm not there yet.
-source /home/ursa-major/.config/broot/launcher/nushell/br
+source ([$CONFIG_DIR "broot" "launcher" "nushell" "br"] | path join)
 
+# ─[ Section::Yazi ]────────────────────────────────────────────────────────
 
-# ─[ Section::Extension Bin ]──────────────────────────────────────────────
+# yazi is another file manager, it is not too dissimilar to broot I think but
+# with some different choices but also implemented using Rust for speed
+source ([$CONFIG_DIR "yazi" "launcher" "nushell" "ya"] | path join)
+
+# ─[ Section::Extension Bin ]───────────────────────────────────────────────
 
 # this sets up some custom directories that are used to hold things like
 # downloaded scripts, custom completions, externs, etc.
+export use libstd *
 export use core *
 export use completions *
-export use libstd *
-# use utils *
-
+export use utils *
 
 # ─[ Section::dotcandyd: ]──────────────────────────────────────────────────
 

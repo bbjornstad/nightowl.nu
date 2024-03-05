@@ -22,6 +22,7 @@
 # ╙──────────────────────────────────────────────────────────────────────╜
 
 # ─[ Neovim Aliases ]───────────────────────────────────────────────────────
+
 # use of vim on the command line will actually invoke nvim instead. Also set up
 # two aliases to adjust the background color if desired.
 export def dnvim [ ...args ] {
@@ -36,11 +37,13 @@ export def lnvim [ ...args ] {
 }
 
 # ─[ File Managers ]────────────────────────────────────────────────────────
+
 # aliases for nnn with the correct environment variables, presumably this was to
 # allow nnn preview to work correctly.
 export alias nnn = with-env { MANPAGER: bat } { nnn }
 
 # ─[ Hyprland ]─────────────────────────────────────────────────────────────
+
 # aliases for Hyprland tiling desktop window manager
 # TODO: modify the below by pulling into a separate module or overlay that can
 # be included and then we can also add any additional implementations there.
@@ -54,6 +57,7 @@ export alias wayedit = killall -SIGUSR2 waybar
 # }
 
 # ─[ LS Aliases ]───────────────────────────────────────────────────────────
+
 # Simply defines a few aliases that I use to query directories in a more
 # specific fashion.
 export alias lsd = ls --long
@@ -63,6 +67,7 @@ export alias aldt = ls --long --all
 export alias lsl = ls --long
 
 # ─[ Emotive Package Management ]───────────────────────────────────────────
+
 # The following configuration snafu has arisen: I want to use paru to manage
 # packages as it seems more powerful than yay, but the way that yay and yeet
 # work as aliases for these commands is too good to not keep.
@@ -71,6 +76,7 @@ export alias yeet = paru -Rnsc
 export alias eet = sudo pacman -Rnsc
 
 # ─[ Searching and File System Navigation ]─────────────────────────────────
+
 # cat -> bat
 # grep -> rg
 # find -> fd
@@ -82,6 +88,7 @@ export alias find = fd
 export alias cd = __zoxide_z
 
 # ─[ Manpager Woes ]────────────────────────────────────────────────────────
+
 # add the ability to switch manpagers with an easy alias; helpful for when nvim
 # is down and we still need to read manual pages.
 export def sman [
@@ -90,17 +97,4 @@ export def sman [
     with-env {MANPAGER: "bat -l Manpage"} {
         man $pages
     }
-}
-
-# ─[ neovim debugging mode ]────────────────────────────────────────────────
-export def bugvim [] {
-    (^valgrind
-     --leak-check=full
-     --show-leak-kinds=all
-     --track-origins=yes
-     --read-var-info=yes
-     --verbose
-     --trace-children=yes
-     --vgdb=full
-     nvim)
 }

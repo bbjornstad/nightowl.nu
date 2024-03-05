@@ -16,18 +16,18 @@
 #You should have received a copy of the GNU General Public License along with
 #this program. If not, see <https://www.gnu.org/licenses/>.
 
-
-# Nightshell: Login Configuration
-# ===============================
+# ─[ Nightshell: Login Configuration ]────────────────────────────────────
+#  ===================================
 # this file defines the behavior that nushell should inherit when the program is
 # initialized. Mainly, we set up keychain in this file to minimize how much
 # authentication must be completed.
-#
-# Section: Keychain Module
-# ========================
+
+# ─[ Section: Keychain Module ]───────────────────────────────────────────
+#  ============================
 # this is a custom module that I have created to handle the ssh-agent and
 # gpg-agent processes through keychain. This must be included here so that we
 # can correctly use it later.
+
 const ssh_keys = {
     eta: "id_ursa-eta_ybkyA-primary_ed25519-sk_ursa-amalthea",
     github: "id_bbjornstad-at-github_ybkyA-primary_ed25519-sk_ursa-amalthea",
