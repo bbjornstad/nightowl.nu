@@ -202,9 +202,9 @@ let light_theme = {
     binary: dark_gray
     cellpath: dark_gray
     row_index: green_bold
-    record: white
-    list: white
-    block: white
+    record: foreground
+    list: foreground
+    block: foreground
     hints: dark_gray
     search_result: {fg: white bg: red}
 
@@ -222,7 +222,7 @@ let light_theme = {
     shape_flag: blue_bold
     shape_float: purple_bold
     # shapes are used to change the cli syntax highlighting
-    shape_garbage: { fg: white bg: red attr: b}
+    shape_garbage: { fg: foreground bg: red attr: b}
     shape_globpattern: cyan_bold
     shape_int: purple_bold
     shape_internalcall: cyan_bold
@@ -434,7 +434,7 @@ $env.config = {
         vi_normal: blink_block
     }
     # if you want a light theme, replace `$dark_theme` to `$light_theme`
-    color_config: $light_theme,
+    color_config: $dark_theme,
     use_grid_icons: true
     # always, never, number_of_rows, auto
     footer_mode: "25"
