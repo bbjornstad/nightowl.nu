@@ -1,20 +1,30 @@
 #!/usr/bin/env nu
 
 #SPDX-FileCopyrightText: 2024 Bailey Bjornstad | ursa-major <bailey@bjornstad.dev>
-#SPDX-License-Identifier: GPL-3.0-only
+#SPDX-License-Identifier: MIT
 
-#Copyright (C) 2024 Bailey Bjornstad | ursa-major bailey@bjornstad.dev
+#MIT License
 
-#This program is free software: you can redistribute it and/or modify it under
-#the terms of the GNU General Public License as published by the Free Software
-#Foundation, version 3.
+# Copyright (c) 2024 Bailey Bjornstad | ursa-major bailey@bjornstad.dev
 
-#This program is distributed in the hope that it will be useful, but WITHOUT ANY
-#WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-#PARTICULAR PURPOSE. See the GNU General Public License for more details.
+#Permission is hereby granted, free of charge, to any person obtaining a copy of
+#this software and associated documentation files (the "Software"), to deal in
+#the Software without restriction, including without limitation the rights to
+#use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+#of the Software, and to permit persons to whom the Software is furnished to do
+#so, subject to the following conditions:
 
-#You should have received a copy of the GNU General Public License along with
-#this program. If not, see <https://www.gnu.org/licenses/>.
+#The above copyright notice and this permission notice (including the next
+#paragraph) shall be included in all copies or substantial portions of the
+#Software.
+
+#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+#SOFTWARE.
 
 # ╓──────────────────────────────────────────────────────────────────────╖
 # ║ * Nushell Configuration *                                            ║
@@ -32,7 +42,9 @@
 #   e.g. by using `chsh` or `usermod` to adjust the user's shell preferences.
 #   The biggest issue with nushell is that it is (obviously) not
 #   POSIX-compliant, and hence some commands might have unexpected behavior, if
-#   they were expecting such compliance.
+#   they were expecting such compliance. This is somewhat uncommon, but easy to
+#   solve or convert the expected command into something compatible with
+#   nushell.
 
 # ╓                                                                      ╖
 # ║ ** Section::Themes **                                                ║
@@ -53,11 +65,12 @@
 # https://github.com/nushell/nu_scripts/tree/main/themes
 
 # ─[ custom theme directory ]───────────────────────────────────────────────
+
 let custom_themes = ([$nu.default-config-dir "themes"] | path join)
 
-# ╓                                                                      ╖
-# ║ basic themes                                                         ║
-# ╙                                                                      ╜
+
+# ─[ basic themes ]─────────────────────────────────────────────────────────
+
 # these themes are useable across different terminal color schemes, without
 # needing to make any adjustments on the fly.
 let dark_theme = {
@@ -189,9 +202,9 @@ let light_theme = {
     binary: dark_gray
     cellpath: dark_gray
     row_index: green_bold
-    record: white
-    list: white
-    block: white
+    record: foreground
+    list: foreground
+    block: foreground
     hints: dark_gray
     search_result: {fg: white bg: red}
 
@@ -209,7 +222,7 @@ let light_theme = {
     shape_flag: blue_bold
     shape_float: purple_bold
     # shapes are used to change the cli syntax highlighting
-    shape_garbage: { fg: white bg: red attr: b}
+    shape_garbage: { fg: foreground bg: red attr: b}
     shape_globpattern: cyan_bold
     shape_int: purple_bold
     shape_internalcall: cyan_bold
@@ -232,46 +245,7 @@ let light_theme = {
     shape_vardecl: purple
 }
 
-# first, some configurations that can be expressed in environment variables
-# prior
-# let use_explicit_theme = ("NIGHTSHELL_NU_EXPLICIT_THEME" in $env)
-# let nu_theme = if (not $use_explicit_theme) {
-#     if ("NIGHTSHELL_NU_STYLE" in $env) {
-#         $env.NIGHTSHELL_NU_STYLE
-#     } else {
-#         "dark"
-#     }
-# } else {
-#     $env.NIGHTSHELL_NU_EXPLICIT_THEME
-# }
-#
-# def style-completions [] {
-#     ["light" "dark"]
-# }
-#
-# def load-external-theme [
-#     theme?: string
-#     theme-dir: directory=(["share", "themes"] | path join)
-# ] {
-#
-#     use ([$nu.default-config-dir $theme_dir $theme] | path join)
-# }
-#
-# def get-theme [
-#     theme?: string
-#     --override-bg: string@style-completions
-# ] {
-#     if $theme == "dark" {
-#         $dark_theme
-#     } else if $theme == "light" {
-#         $light_theme
-#     } else {
-#         use (
-#             [$nu.default-config-dir "share" "themes" $nu_theme]
-#             | path join
-#             )
-#     }
-# }
+# ─[ custom completers ]────────────────────────────────────────────────────
 
 let fish_completer = {|spans: list<string>|
     fish --command $'complete "--do-complete=(...$spans | str join " ")"'
@@ -311,10 +285,11 @@ let external_completer = { |spans: list<string>|
     } | do $in $spans
 }
 
-$env.GPG_TTY = (tty)
 
-# Section: Main User Configuration
-# ================================
+# ╓                                                                      ╖
+# ║ Section: Main User Configuration                                     ║
+# ╙                                                                      ╜
+
 # this is the meat and potatoes of nushell, all configuration is ultimately
 # needed to hook into this step in order to get caught by the nushell init
 # process.
@@ -352,7 +327,7 @@ $env.config = {
 
     explore: {
         help_banner: true
-        exit_esc: true
+        exit_esc: false
 
         command_bar_text: 'foreground'
 
@@ -386,7 +361,7 @@ $env.config = {
             show_head: true
             show_index: true
 
-            selected_cell: {fg: 'white', bg: '#777777'}
+            selected_cell: {fg: 'foreground', bg: '#777777'}
             selected_row: {fg: 'yellow', bg: '#C1C2A3'}
             selected_column: blue
 
@@ -408,7 +383,7 @@ $env.config = {
     history: {
         # Session has to be reloaded for this to take effect
         max_size: 10000
-        sync_on_enter: false
+        sync_on_enter: true
         # Enable to share history between multiple sessions, else you have to
         # close the session to write history to file
         file_format: "sqlite"
@@ -427,7 +402,7 @@ $env.config = {
         # set this to false to prevent partial filling of the prompt
         partial: true
         # prefix or fuzzy
-        algorithm: "prefix"
+        algorithm: "fuzzy"
         external: {
             # set to false to prevent nushell looking into $env.PATH to find
             # more suggestions, `false` recommended for WSL users as this look
@@ -459,7 +434,7 @@ $env.config = {
         vi_normal: blink_block
     }
     # if you want a light theme, replace `$dark_theme` to `$light_theme`
-    color_config: $light_theme,
+    color_config: $dark_theme,
     use_grid_icons: true
     # always, never, number_of_rows, auto
     footer_mode: "25"
@@ -511,7 +486,7 @@ $env.config = {
         {
             name: completion_menu
             only_buffer_difference: false
-            marker: "| "
+            marker: "󰺾 "
             type: {
                 layout: columnar
                 columns: 4
@@ -521,15 +496,15 @@ $env.config = {
                 col_padding: 2
             }
             style: {
-                text: green
-                selected_text: green_reverse
-                description_text: yellow
+                text: blue
+                selected_text: blue_reverse
+                description_text: light_red
             }
         }
         {
             name: history_menu
             only_buffer_difference: true
-            marker: "? "
+            marker: "󰔟 "
             type: {
                 layout: list
                 page_size: 10
@@ -537,13 +512,13 @@ $env.config = {
             style: {
                 text: green
                 selected_text: green_reverse
-                description_text: yellow
+                description_text: light_red
             }
         }
         {
             name: help_menu
             only_buffer_difference: true
-            marker: "? "
+            marker: "󰮦 "
             type: {
                 layout: description
                 columns: 4
@@ -557,7 +532,7 @@ $env.config = {
             style: {
                 text: green
                 selected_text: green_reverse
-                description_text: yellow
+                description_text: light_blue
             }
         }
         # Example of extra menus created using a nushell source
@@ -566,7 +541,7 @@ $env.config = {
         {
             name: commands_menu
             only_buffer_difference: false
-            marker: "/ "
+            marker: "󰛕 "
             type: {
                 layout: columnar
                 columns: 4
@@ -576,7 +551,7 @@ $env.config = {
             style: {
                 text: green
                 selected_text: green_reverse
-                description_text: yellow
+                description_text: light_blue
             }
             source: { |buffer, position|
                 $nu.scope.commands
@@ -587,7 +562,7 @@ $env.config = {
         {
             name: vars_menu
             only_buffer_difference: true
-            marker: "$ "
+            marker: "󰫧 "
             type: {
                 layout: list
                 page_size: 10
@@ -595,7 +570,7 @@ $env.config = {
             style: {
                 text: green
                 selected_text: green_reverse
-                description_text: yellow
+                description_text: light_blue
             }
             source: { |buffer, position|
                 $nu.scope.vars
@@ -605,21 +580,42 @@ $env.config = {
             }
         }
         {
+            name: cd_menu
+            only_buffer_difference: true
+            marker: " "
+            type: {
+                layout: list
+                page_size: 10
+            }
+            style: {
+                text: green
+                selected_text: green_reverse
+                description_text: light_red
+            }
+            source: { |buffer, position|
+                ls
+                | where (type == dir) and (name ~= $buffer)
+                | fzf --no-multi --cycle
+                | lines
+                | each { |it| {value: $it.name description: $it.name} }
+            }
+        }
+        {
             name: commands_with_description
             only_buffer_difference: true
-            marker: "/ "
+            marker: "󱍁 "
             type: {
                 layout: description
-                columns: 4
+                columns: 2
                 col_width: 20
-                col_padding: 2
+                col_padding: 4
                 selection_rows: 4
                 description_rows: 10
             }
             style: {
                 text: green
                 selected_text: green_reverse
-                description_text: yellow
+                description_text: light_blue
             }
             source: { |buffer, position|
                 $nu.scope.commands
@@ -642,7 +638,7 @@ $env.config = {
             }
         }
         {
-            name: completion_previous
+            name: default_menu_previous
             modifier: shift
             keycode: backtab
             # Note: You can add the same keybinding to all modes by using a list
@@ -650,45 +646,71 @@ $env.config = {
             event: { send: menuprevious }
         }
         {
+            name: menu_up
+            modifier: control
+            keycode: char_k
+            mode: [vi_insert vi_normal]
+            event: { send: menuup }
+        }
+        {
+            name: menu_down
+            modifier: control
+            keycode: char_j
+            mode: [vi_insert vi_normal]
+            event: { send: menudown }
+        }
+        {
+            name: menu_left
+            modifier: control
+            keycode: char_h
+            mode: [vi_insert vi_normal]
+            event: { send: menuleft }
+        }
+        {
+            name: menu_right
+            modifier: control
+            keycode: char_l
+            mode: [vi_insert vi_normal]
+            event: { send: menuright }
+        }
+        {
+            name: menu_next
+            modifier: control
+            keycode: char_n
+            mode: [vi_normal vi_insert]
+            event: { send: menunext }
+        }
+        {
+            name: menu_previous
+            modifier: control
+            keycode: char_p
+            mode: [vi_normal vi_insert]
+            event: { send: menuprevious }
+        }
+        {
             name: history_menu
             modifier: control
             keycode: char_r
-            mode: emacs
+            mode: [vi_normal vi_insert]
             event: { send: menu name: history_menu }
         }
         {
             name: next_page
-            modifier: control
-            keycode: char_x
-            mode: emacs
+            modifier: shift_control
+            keycode: char_n
+            mode: [vi_normal vi_insert]
             event: { send: menupagenext }
         }
         {
-            name: undo_or_previous_page
-            modifier: control
-            keycode: char_z
-            mode: emacs
-            event: {
-                until: [
-                    { send: menupageprevious }
-                    { edit: undo }
-                ]
-            }
-        }
-        {
-            name: yank
-            modifier: control
-            keycode: char_y
-            mode: emacs
-            event: {
-                until: [
-                    {edit: pastecutbufferafter}
-                ]
-            }
+            name: previous_page
+            modifier: shift_control
+            keycode: char_p
+            mode: [vi_normal vi_insert]
+            event: { send: menupageprevious }
         }
         {
             name: unix-line-discard
-            modifier: control
+            modifier: shift_control
             keycode: char_u
             mode: [emacs, vi_normal, vi_insert]
             event: {
@@ -699,7 +721,7 @@ $env.config = {
         }
         {
             name: kill-line
-            modifier: control
+            modifier: shift_control
             keycode: char_k
             mode: [emacs, vi_normal, vi_insert]
             event: {
@@ -718,7 +740,7 @@ $env.config = {
         }
         {
             name: vars_menu
-            modifier: alt
+            modifier: control
             keycode: char_o
             mode: [emacs, vi_normal, vi_insert]
             event: { send: menu name: vars_menu }
@@ -730,41 +752,35 @@ $env.config = {
             mode: [emacs, vi_normal, vi_insert]
             event: { send: menu name: commands_with_description }
         }
+        {
+            name: cd_menu
+            modifier: control
+            keycode: char_z
+            mode: [vi_normal vi_insert]
+            event: { send: menu name: cd_menu }
+        }
+
     ]
 }
 
-# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-# Section: User Customization
-# ===========================
-# typically we want to write these in external files and import them during the
-# evaluation of this config.nu
+const CONFIG_DIR = (["~", ".config"] | path join)
 
-# Section: libconfig Definition
-# =============================
-# libconfig is a simple utility library that we are going to use in our
-# configuration setup here. Mostly, it provides some utilities for iterating
-# through collections of modules in order to define environment and commands
-# succinctly.
+# ─[ Section: direnv: ]─────────────────────────────────────────────────────
 
-# Section: direnv:
-# ================
 # as of a recentish update to nushell, it seems as though the proper hook into
 # the direnv package is supposed to be set up this way instead. Note that we
 # able to auto-update this when needed.
 $env.DIRENV_LOG_FORMAT = ""
 $env.config.hooks.env_change.PWD = ($env.config.hooks.env_change.PWD
-    | append (source ~/.config/nushell/hooks/direnv.nu)
-)
+    | append (
+        source (
+            [$nu.default-config-dir "hooks" "direnv.nu"]
+            | path join)
+        )
+    )
 
-# Section::atuin:
-# ===============
-# The following initializes the atuin history tool with default settings. This
-# updates as needed.
-#
-# source ~/.local/share/atuin/init.nu
+# ─[ Section::Zoxide: Autojump Manager ]────────────────────────────────────
 
-# Section::Zoxide: Autojump Manager
-# =================================
 # Zoxide is a modern-age replacement for the cd command, which provides history,
 # frecency, etc. as a more efficient method of changing directories on the
 # command line.
@@ -774,30 +790,48 @@ source ([$nu.default-config-dir "external" "zoxide.nu"] | path join)
 
 source ($nu.default-config-dir | path join aliases.nu)
 
-# Section::nnn
-# ============
+# ─[ Section::nnn ]─────────────────────────────────────────────────────────
+
 # this sets up the cd-on-quit behavior for nnn, namely by defining the new,
 # correct invocation of nnn to be simply `n`.
 source ([$nu.default-config-dir "external" "nnn-quitcd.nu"] | path join)
 
-# Section::broot
-# ==============
+# ─[ Section::weechat ]───────────────────────────────────────────────────
+
+# this sets up weechat by calling the predefined script that I have which
+# defines the new chat command.
+export use ([$nu.default-config-dir "external" "weechat.nu"] | path join) *
+
+# ─[ Section::Zellij ]────────────────────────────────────────────────────
+
+# eventually, this section will hold the call to an external script that will
+# hold the autostart logic for zellij. This does depend somewhat on whether
+# Zellij will stop interrupting my keybindings
+
+# ─[ Section::broot ]───────────────────────────────────────────────────────
+
 # broot is a file manager, a nice view of a file-tree directly in the terminal
 # with a speedy ui and reasonably simple keybindings. this is supposed to hook
 # up to vim, but so far I'm not there yet.
-source /home/ursa-major/.config/broot/launcher/nushell/br
+source ([$CONFIG_DIR "broot" "launcher" "nushell" "br"] | path join)
 
-# Section::Extension Bin
-# ======================
+# ─[ Section::Yazi ]────────────────────────────────────────────────────────
+
+# yazi is another file manager, it is not too dissimilar to broot I think but
+# with some different choices but also implemented using Rust for speed
+source ([$CONFIG_DIR "yazi" "launcher" "nushell" "ya"] | path join)
+
+# ─[ Section::Extension Bin ]───────────────────────────────────────────────
+
 # this sets up some custom directories that are used to hold things like
 # downloaded scripts, custom completions, externs, etc.
+export use libstd *
 export use core *
 export use completions *
-export use libstd *
-# use utils *
+export use utils *
 
-# Section::dotcandyd:
-# ===================
+# ─[ Section::dotcandyd: ]──────────────────────────────────────────────────
+
 # these are some of the more important definitions that we need to make sure are
 # present in the shell. They define the candy alias, which is what I use to
 # manage my system configuration. The first is a simple alias to the required
@@ -805,7 +839,13 @@ export use libstd *
 # to the external git tool
 # export use core alias_candy
 
-# Section::gpg fix
-# ================
+# ─[ Section::gpg fix ]─────────────────────────────────────────────────────
+
 # to make gpg agent work correctly
 $env.GPG_TTY = (tty)
+
+# ─[ section::starship ]──────────────────────────────────────────────────
+
+use ~/.cache/starship/init.nu
+
+# do --env {|| bash -c eval '$(zellij setup --generate-auto-start bash)'}

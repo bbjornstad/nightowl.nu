@@ -1,4 +1,5 @@
 #!/usr/bin/env nu
+# vim: set ft=nu:
 
 #SPDX-FileCopyrightText: 2024 Bailey Bjornstad | ursa-major <bailey@bjornstad.dev>
 #SPDX-License-Identifier: GPL-3.0-only
@@ -16,18 +17,18 @@
 #You should have received a copy of the GNU General Public License along with
 #this program. If not, see <https://www.gnu.org/licenses/>.
 
-
-# Nightshell: Login Configuration
-# ===============================
+# ─[ Nightshell: Login Configuration ]────────────────────────────────────
+#  ===================================
 # this file defines the behavior that nushell should inherit when the program is
 # initialized. Mainly, we set up keychain in this file to minimize how much
 # authentication must be completed.
-#
-# Section: Keychain Module
-# ========================
+
+# ─[ Section: Keychain Module ]───────────────────────────────────────────
+#  ============================
 # this is a custom module that I have created to handle the ssh-agent and
 # gpg-agent processes through keychain. This must be included here so that we
 # can correctly use it later.
+
 const ssh_keys = {
     eta: "id_ursa-eta_ybkyA-primary_ed25519-sk_ursa-amalthea",
     github: "id_bbjornstad-at-github_ybkyA-primary_ed25519-sk_ursa-amalthea",
@@ -35,11 +36,10 @@ const ssh_keys = {
 }
 
 const gpg_keys = {
-    passwordstore: "D67D6455A0382752"
-    ybkyA_primary: "8361328584A414FE"
+     passwordstore: "D67D6455A0382752"
+     ybkyA_primary: "8361328584A414FE"
 }
 
-(kc add-keys
-    --ssh-keys ($ssh_keys | values)
-    --gpg-keys ($gpg_keys | values)
-    --inheritance "any-once")
+(kctl to-env --ssh-keys ($ssh_keys | values | uniq) --gpg-keys ($gpg_keys | values | uniq))
+
+(kctl start --noask --inherit any --from-env)

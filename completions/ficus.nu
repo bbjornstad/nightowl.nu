@@ -29,7 +29,7 @@ export extern figlet [
     -c # place output aligned center horizontally
     -l # place output flush left
     -r # place output flush right
-    -x # set output justification based on whether the text is left to right or right to left
+    -x # automatically set output justification based on whether the text is left to right or right to left
     -t # set target output width to terminal width
     -w: int # target output width in number of columns
     -p # use `paragraph-mode`; treats newlines as blanks between words--see `man figlet`

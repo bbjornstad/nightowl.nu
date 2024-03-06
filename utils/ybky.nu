@@ -14,7 +14,7 @@
 # `ybky`: the top-level entry point for the subcommands of ybky. Not sure that
 # this will have any functionality at the end of this, perhaps just a simple
 # status output would suffice.
-export def --env ybky [ ] {
+export def --env main [ ] {
 
 }
 
@@ -23,7 +23,7 @@ export def --env ybky [ ] {
 # supported by Yubikey: PGP, FIDO (mainly for SSH), and PIV. Also, we include an
 # `age` implementation, which does require an additional dependency in the form
 # of the yubico-age-plugin.
-export def --env "ybky gen" [ ] {
+export def --env gen [ ] {
 
 }
 
@@ -31,9 +31,9 @@ export def --env "ybky gen" [ ] {
 # security token. These PGP tokens can be used to authenticate in some places,
 # signing commits/messages/communications, and generally as a form of identity
 # verification across machines and services.
-export def --env "ybky gen pgp" [
-    --type?: string="EC" # the type of pgp token that should be created, either EC or RSA for elliptic curve or RSA
-    --size?: int=4096 # the size of the pgp token that should be created, only applicable in the case where $type == "RSA"
+export def --env "gen pgp" [
+    --type (-t): string="EC" # the type of pgp token that should be created, either EC or RSA for elliptic curve or RSA
+    --size (-s): int=4096 # the size of the pgp token that should be created, only applicable in the case where $type == "RSA"
 ] {
 
 }
@@ -43,7 +43,7 @@ export def --env "ybky gen pgp" [
 # the easier way to create security backed ed25519 tokens. This includes
 # convenience functionality to intake relevant parameters from the environment
 # or user in formatting key metadata.
-export def --env "ybky gen ssh" [ ] {
+export def --env "gen ssh" [ ] {
 
 }
 
@@ -51,15 +51,15 @@ export def --env "ybky gen ssh" [ ] {
 # backing provided by recent enough versions of OpenSSL. This is a direct
 # wrapper around the system calls to ssh...gen...
 # TODO: determine the degree to which this is superfluous.
-export def --env "ybky gen fido" [ ] {
+export def --env "gen fido" [ ] {
 
 }
 
 # `ybky mktemp`: helper function that creates a temporary home directory for the
 # duration of this session. If the --dry flag is specified, then the directory
-export def --env "ybky mktemp" [
-    --name: string=$"gnupg_(^date +%Y%m%d%H%M)_XXX" # the string to use as template for name of the directory; can use certain forms of syntactiw sugar, see `man mktemp`
-    --dry: bool=false # whether or not the directory should be actually created; if true, will only return the path pointing to the theoretical location (unsafe).
+export def --env mktemp [
+    --name (-n): string='gnupg_(^date +%Y%m%d%H%M)_XXX' # the string to use as template for name of the directory; can use certain forms of syntactiw sugar, see `man mktemp`
+    --dry (-d) # whether or not the directory should be actually created; if true, will only return the path pointing to the theoretical location (unsafe).
 ] {
-    $env.GNUPGHOME =  (mktemp --directory -t $name)
+    $env.GNUPGHOME =  (mktemp -n $name)
 }

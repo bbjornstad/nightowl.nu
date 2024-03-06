@@ -1,5 +1,8 @@
-module libstd/pathfind.nu
-export use pathfind *
+module libstd/pf.nu
+export use pf
 
-module libstd/fz.nu
-export use fz *
+module libstd/fuzz.nu
+export use fuzz *
+
+module libstd/genhelp.nu
+export use genhelp *
