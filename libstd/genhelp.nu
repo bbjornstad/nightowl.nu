@@ -96,6 +96,11 @@ module genhelp {
                              | get $it.index)) }) }
          | reduce { |it,acc| ($it | append $acc) })
     }
+
+    export def "hp parse carapace" [
+    ] {
+        let compl = { |spans, buffer| carapace $spans.0 }
+    }
 }
 
 export use genhelp *

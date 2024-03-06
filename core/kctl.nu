@@ -72,12 +72,23 @@ export extern keychain [
 export def --wrapped main [
     --agents (-a): list<string>
     --fp (-f)
+    --quiet (-q)
     ...args: string
 ] {
     if (not $fp) {
-        ^keychain --agents ($agents | str join ",") --list ...$args
+        (^keychain
+         --agents ($agents
+             | str join ",")
+         --list
+         (if $quiet { '--quiet' } else { '' })
+         ...$args)
     } else {
-        ^keychain --agents ($agents | str join ",") --list-fp ...$args
+        (^keychain
+         --agents ($agents
+            | str join ",")
+         --list-fp
+         (if $quiet { '--quiet' } else { '' })
+         ...$args)
     }
 }
 
@@ -97,6 +108,7 @@ export def --wrapped revoke [
     --keychain-home (-H): glob='~/.keychain'
     --targets (-s): glob='*'
     --noclear (-c)
+    --quiet (-q)
     ...args: string
 ] {
     if ($stop != null) or (not $noclear) {
@@ -105,7 +117,10 @@ export def --wrapped revoke [
                 | append
                 (if (not $noclear) { ['--clear' ] } else { [] })
                 )
-            (^keychain ...$revargs ...$args)
+            (^keychain
+             (if $quiet { '--quiet' } else { '' })
+             ...$revargs
+             ...$args)
     }
     let removetarget = (glob ([$keychain_home $targets] | path join))
         ($removetarget
@@ -135,12 +150,20 @@ export def --env from-env [
     (keval
      --ssh-keys $ssh_keys
      --gpg-keys $gpg_keys
-     --quiet $quiet) | import
+     (if $quiet { "--quiet" } else { '' })) | import
 }
+
+export def --wrapped --env envid [
+    --ssh (-s): string
+    --gpg (-g): string
+    --quiet (-q)
+    ...args: string
+] {}
 
 export def --wrapped keval [
     --ssh-keys (-s): list<string> # ids of ssh keys to add via keychain
     --gpg-keys (-g): list<string> # ids of gpg keys to add via keychain
+    --quiet (-q)
     ...args: string
 ] {
     mut agents = []
@@ -164,6 +187,7 @@ export def --wrapped keval [
 
     (^keychain
       --agents ($agents | str join ",")
+      (if $quiet { "--quiet" } else { '' })
       ...$args
       ...$final_ssh
       ...$final_gpg)
@@ -175,8 +199,9 @@ export def --env --wrapped start [
     --ssh-env (-S): string='URSA_SSH_KEYS'
     --gpg-env (-S): string='URSA_GPG_KEYS'
     --from-env (-e)
-    --nosystemd
-    --noeval
+    --nosystemd (-D)
+    --noeval (-E)
+    --quiet (-q)
     ...args: string
 ] {
     let host = (run-external 'uname' '-n')
@@ -209,6 +234,7 @@ export def --env --wrapped start [
     (keval
      ...$startargs
      ...$args
+     (if $quiet { "--quiet" } else { '' })
      --ssh-keys $ssh_keys
      --gpg-keys $gpg_keys) | import
 }
