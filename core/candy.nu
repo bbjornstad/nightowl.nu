@@ -17,14 +17,8 @@ export def --env --wrapped main [
     subcommand: string@"nu-complete candy"       # subcommand of git that should be run on this invocation of the candy cli tool
     ...args: string                              # additional possible git arguments
 ] {
-    mut dircandy = $env.DOTCANDYD_USER_HOME
-    if ($git_dir != null) {
-        $dircandy = $git_dir
-    }
-    mut worktree = $env.HOME
-    if ($work_tree != null) {
-        $worktree = $work_tree
-    }
+    let dircandy = $git_dir | default $env.DOTCANDYD_USER_HOME
+    let worktree = $work_tree | default $env.HOME
 
     ^git --git-dir $dircandy --work-tree $worktree $subcommand ...$args
 }
@@ -45,13 +39,7 @@ export def --env --wrapped wonka [
   --work-tree (-w): path,         # path to directory at root of files that should be tracked
   ...args: string                 # additional possible gitui arguments
 ] {
-  mut dircandy = $env.DOTCANDYD_USER_HOME
-  if ($git_dir != null) {
-        $dircandy = $git_dir
-  }
-  mut worktree = $env.HOME
-  if ($work_tree != null) {
-        $worktree = $worktree
-  }
-  gitui --directory $dircandy --workdir $work_tree ...$args
+  let dircandy = $git_dir | default $env.DOTCANDYD_USER_HOME
+  let worktree = $work_tree | default $env.HOME
+  ^gitui --directory $dircandy --workdir $work_tree ...$args
 }
