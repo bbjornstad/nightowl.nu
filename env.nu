@@ -150,6 +150,7 @@ let core = ($nu.default-config-dir | path join "core")
 let utils = ($nu.default-config-dir | path join "utils")
 let share = ($nu.default-config-dir | path join "share")
 let std = ($nu.default-config-dir | path join "libstd")
+let aliases = ($nu.default-config-dir | path join "aliases")
 $env.NU_LIB_DIRS = [
     $nu.default-config-dir
 ]
@@ -191,7 +192,7 @@ $env.DOTCANDYD_USER_HOME = ($env.HOME | path join ".candy.d")
 # ─[ Section::zoxide ]──────────────────────────────────────────────────────
 
 # correctly setup zoxide for nushell
-zoxide init nushell | save -f ~/.config/nushell/zoxide.nu
+zoxide init nushell | save -f ~/.config/nushell/external/zoxide.nu
 
 # ─[ section::Starship ]──────────────────────────────────────────────────
 
