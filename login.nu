@@ -40,6 +40,6 @@ const gpg_keys = {
      ybkyA_primary: "8361328584A414FE"
 }
 
-(kctl to-env --ssh-keys ($ssh_keys | values | uniq) --gpg-keys ($gpg_keys | values | uniq))
+(kctl to-env --ssh-keys ($ssh_keys | values) --gpg-keys ($gpg_keys | values))
 
 (kctl start --noask --inherit any --from-env)
