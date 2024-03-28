@@ -102,7 +102,7 @@ module ghb {
                             --redirect-mode follow
                             --headers $full_headers
                             $row.url) })
-                | select ["name" "id" "content"])
+                | select ...["name" "id" "content"])
         $bin
     }
 
