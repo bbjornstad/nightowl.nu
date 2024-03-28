@@ -800,6 +800,11 @@ source ([$nu.default-config-dir "external" "nnn-quitcd.nu"] | path join)
 # defines the new chat command.
 export use ([$nu.default-config-dir "external" "weechat.nu"] | path join) *
 
+# ─[ Secton::pspg ]───────────────────────────────────────────────────────
+
+# set up pspg tabular data pager
+export use ([$nu.default-config-dir "external" "pspg.nu"] | path join) *
+
 # ─[ Section::Zellij ]────────────────────────────────────────────────────
 
 # eventually, this section will hold the call to an external script that will
