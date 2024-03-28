@@ -120,7 +120,7 @@ let dark_theme = {
     list: white
     block: white
     hints: dark_gray
-    search_result: {bg: red fg: white}
+    search_result: {bg: cyan fg: light_cyan }
 
     shape_and: purple_bold
     shape_binary: purple_bold
@@ -136,7 +136,7 @@ let dark_theme = {
     shape_flag: blue_bold
     shape_float: purple_bold
     # shapes are used to change the cli syntax highlighting
-    shape_garbage: { fg: white bg: red attr: b}
+    shape_garbage: { fg: light_red bg: red attr: b}
     shape_globpattern: cyan_bold
     shape_int: purple_bold
     shape_internalcall: cyan_bold
@@ -206,7 +206,7 @@ let light_theme = {
     list: foreground
     block: foreground
     hints: dark_gray
-    search_result: {fg: white bg: red}
+    search_result: {fg: light_cyan bg: cyan}
 
     shape_and: purple_bold
     shape_binary: purple_bold
@@ -312,7 +312,7 @@ $env.config = {
         mode: compact
         # "always" show indexes, "never" show indexes, "auto" = show indexes
         # when a table has "index" column
-        index_mode: always
+        index_mode: auto
         # show 'empty list' and 'empty record' placeholders for command output
         show_empty: true
         trim: {
@@ -338,7 +338,7 @@ $env.config = {
         status: {
             warn: { fg: 'yellow'}
             error: { fg: 'red'}
-            info: { fg: 'blue'}
+            info: { fg: 'light_blue'}
         }
 
         try: {
@@ -425,21 +425,21 @@ $env.config = {
     cursor_shape: {
         # block, underscore, line, blink_block, blink_underscore, blink_line
         # (line is the default)
-        emacs: line
+        emacs: blink_line
         # block, underscore, line , blink_block, blink_underscore, blink_line
         # (block is the default)
         vi_insert: blink_line
         # block, underscore, line, blink_block, blink_underscore, blink_line
         # (underscore is the default)
-        vi_normal: blink_block
+        vi_normal: blink_underscore
     }
     # if you want a light theme, replace `$dark_theme` to `$light_theme`
-    color_config: $dark_theme,
+    color_config: $light_theme,
     use_grid_icons: true
     # always, never, number_of_rows, auto
     footer_mode: "25"
     # the precision for displaying floats in tables
-    float_precision: 2
+    float_precision: 1
     # command that will be used to edit the current line buffer with ctrl+o, if
     # unset fallback to $env.EDITOR and $env.VISUAL
     # buffer_editor: "emacs"
@@ -788,8 +788,6 @@ $env.config.hooks.env_change.PWD = ($env.config.hooks.env_change.PWD
 # this is provided by nushell
 source ([$nu.default-config-dir "external" "zoxide.nu"] | path join)
 
-source ($nu.default-config-dir | path join aliases.nu)
-
 # ─[ Section::nnn ]─────────────────────────────────────────────────────────
 
 # this sets up the cd-on-quit behavior for nnn, namely by defining the new,
@@ -829,15 +827,7 @@ export use libstd *
 export use core *
 export use completions *
 export use utils *
-
-# ─[ Section::dotcandyd: ]──────────────────────────────────────────────────
-
-# these are some of the more important definitions that we need to make sure are
-# present in the shell. They define the candy alias, which is what I use to
-# manage my system configuration. The first is a simple alias to the required
-# call to git, the second is a custom-command defined as a wrapper around a call
-# to the external git tool
-# export use core alias_candy
+export use aliases *
 
 # ─[ Section::gpg fix ]─────────────────────────────────────────────────────
 
