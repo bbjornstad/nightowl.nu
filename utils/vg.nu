@@ -88,12 +88,12 @@ export extern valgrind [
     --exit-on-first-error: string@'nu-complete valgrind-yesno'
 ]
 
-
 # a wrapper for the `valgrind` command-line tool for debugging memory leaks and
 # program performance degradations/crashes; see https://valgrind.org for more
 # information
 export def --wrapped main [
+    cls: closure
     ...args: string
 ] {
-
+    (^valgrind (do $cls ...$args))
 }
