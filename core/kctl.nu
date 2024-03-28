@@ -106,7 +106,7 @@ export def --env import [] {
 export def --wrapped revoke [
     --stop (-k): string
     --keychain-home (-H): glob='~/.keychain'
-    --targets (-s): glob='*'
+    --targets (-s): string='*'
     --noclear (-c)
     --quiet (-q)
     ...args: string
@@ -122,7 +122,7 @@ export def --wrapped revoke [
              ...$revargs
              ...$args)
     }
-    let removetarget = (glob ([$keychain_home $targets] | path join))
+    let removetarget = (glob ([$keychain_home $targets] | path join | inspect) | inspect)
         ($removetarget
          | par-each { |it| $it | rm $it })
 }
