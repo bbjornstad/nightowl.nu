@@ -1,3 +1,5 @@
+#!/usr/bin/env nu
+# vim: set ft=nu:
 let dawnfox_theme = {
    binary: "#d7827e"
    block: "#625c87"
