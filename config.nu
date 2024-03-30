@@ -309,7 +309,7 @@ $env.config = {
     table: {
         # basic, compact, compact_double, light, thin, with_love, rounded,
         # reinforced, heavy, none, other
-        mode: compact
+        mode: psql
         # "always" show indexes, "never" show indexes, "auto" = show indexes
         # when a table has "index" column
         index_mode: auto
