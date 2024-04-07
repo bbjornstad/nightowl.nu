@@ -792,7 +792,7 @@ source ([$nu.default-config-dir "external" "zoxide.nu"] | path join)
 
 # this sets up the cd-on-quit behavior for nnn, namely by defining the new,
 # correct invocation of nnn to be simply `n`.
-source ([$nu.default-config-dir "external" "nnn-quitcd.nu"] | path join)
+# source ([$nu.default-config-dir "external" "nnn-quitcd.nu"] | path join)
 
 # ─[ Section::weechat ]───────────────────────────────────────────────────
 
