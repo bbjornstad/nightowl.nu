@@ -41,5 +41,5 @@ export def --env --wrapped wonka [
 ] {
   let dircandy = $git_dir | default $env.DOTCANDYD_USER_HOME
   let worktree = $work_tree | default $env.HOME
-  ^gitui --directory $dircandy --workdir $work_tree ...$args
+  ^gitui --directory $dircandy --workdir $worktree ...$args
 }
