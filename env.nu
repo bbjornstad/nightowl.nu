@@ -173,7 +173,10 @@ $env.NU_PLUGIN_DIRS = [
 # add in cargo binary directory to path to allow for cargo installed pkgs to
 # show up in nushell correctly
 let cargo_bin = ([ $env.HOME, ".cargo", "bin" ] | path join)
-mut extra_paths = [ $cargo_bin ]
+let coursier_bin = (
+    [$env.HOME, ".local", "share", "coursier", "bin"]
+    | path join)
+mut extra_paths = [ $cargo_bin, $coursier_bin ]
 
 $extra_paths = (
     ([$env.NUPM_HOME "scripts"] | path join)
