@@ -8,7 +8,7 @@ export def main [] { }
 export def "raur remove" [
     --nofuzz(-f)
 ] {
-    let inp = (run-external --redirect-stdout "paru" "-Qq")
+    let inp = (^paru -Qq)
     let remove_targets = (if not $nofuzz {
         ($inp
          | ^fzf --multi --preview 'paru -Qi {1}')
@@ -25,7 +25,7 @@ export def "raur clean" [
     --review(-r)
 ] {
     if not $skip_orphans {
-        let orph = (run-external --redirect-stdout "paru" "-Qtdq")
+        let orph = (^paru -Qtdq)
         let remove_targets = (if $review {
             ($orph | ^fzf --multi --preview 'paru -Qi {1}')
         } else {
@@ -41,7 +41,7 @@ export def --wrapped "raur install" [
     --nofuzz(-f)
     ...args
 ] {
-    let inp = (run-external --redirect-stdout "paru" "-Slq")
+    let inp = (^paru -Slq ...$args)
     let install_targets = (if not $nofuzz {
         ($inp
          | ^fzf --multi --preview 'paru -Si {1}')
@@ -66,21 +66,33 @@ export def "raur list" [
     $cmdargs = ($cmdargs | append (if $outdated { [ "-u" ] } else { [] }))
     $cmdargs = ($cmdargs | append (if $ls_files { ["-l"] } else { [] }))
     $cmdargs = ($cmdargs | append (if $information { ["-i"] } else { [] }))
-    run-external --redirect-combine "paru" ...$cmdargs
+    ^paru ...$cmdargs
 }
 
 export def --wrapped "raur search" [
     --nofuzz(-f)
+    --paru-mode(-m): string="Search(AUR)"
     ...args
 ] {
-    let inp = (run-external --redirect-stdout "paru" "-Ss" ...$args)
+    let inp = (^paru -Slq ...$args)
     let search_targets = (if not $nofuzz {
-        ($inp | ^fzf --multi --preview 'paru -Qi {1}')
+        ($inp | ^fzf --multi --preview 'paru -Si {1}')
     } else {
         $inp
     })
+    let target_mode = (["Search(AUR)", "Install", "Query(local)"]
+        | input list "Select paru mode")
+    let finargs = ($args
+        | prepend (
+            match $target_mode {
+                "Search(AUR)" => { ['-Ss'] },
+                "Install" => { ['-Syu'] },
+                "Query(local)" => { ['-Q'] }
+            }
+        )
+    )
     ($inp
-     | ^xargs -ro paru -Ss ...$args)
+     | ^xargs -ro paru ..$finargs)
 }
 
 export def --wrapped "raur spec" [
