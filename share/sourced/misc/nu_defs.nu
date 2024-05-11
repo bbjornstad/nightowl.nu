@@ -75,7 +75,7 @@ def column2 [n] {
 
 #short pwd
 def pwd-short [] {
-  $env.PWD | str replace $nu.home-path '~' -s
+  $env.PWD | str replace $nu.home-path '~'
 }
 
 #string repeat
@@ -323,7 +323,7 @@ def trans [
   --from:string     #from which language you are translating (default english)
   --to:string       #to which language you are translating (default spanish)
   #
-  #Use ISO standar names for the languages, for example:
+  #Use ISO standard names for the languages, for example:
   #english: en-US
   #spanish: es-ES
   #italian: it-IT

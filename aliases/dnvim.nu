@@ -5,13 +5,20 @@
 
 # use of vim on the command line will actually invoke nvim instead. Also set up
 # two aliases to adjust the background color if desired.
-export def main [ ...args ] {
+export def --wrapped main [ ...args ] {
     with-env { NIGHTOWL_BACKGROUND_STYLE: "dark" } {
-        nvim ...$args
+        ^nvim ...$args
     }
 }
-export def lnvim [ ...args ] {
+
+export def --wrapped lnvim [ ...args ] {
     with-env { NIGHTOWL_BACKGROUND_STYLE: "light" } {
-        nvim ...$args
+        ^nvim ...$args
+    }
+}
+
+export def --wrapped rockvim [...args] {
+    with-env { NVIM_APPNAME: "nvim-rocks" } {
+        ^nvim ...$args
     }
 }

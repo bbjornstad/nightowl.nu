@@ -1,0 +1,13 @@
+@document.meta
+title: roadmap
+description: nightowl.nu brainstorming implementation roadmap
+authors: ursa-major
+categories: strategy,nightowl,nushell,implementation
+created: 2024-04-20T16:12:47-0700
+updated: 2024-04-20T16:15:04-0700
+version: 1.1.1
+@end
+
+* nightowl.nu
+  Let this document serve as a rough strategic plan for the desired
+  implementations that I would like to have available in my shell.

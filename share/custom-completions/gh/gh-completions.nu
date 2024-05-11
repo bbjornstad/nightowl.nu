@@ -68,6 +68,64 @@ export extern "gh gist" [
     --help             # Show help for command
 ]
 
+export extern "gh gist clone" [
+    gist: string        # gist to clone
+    directory?:path     # directory to clone
+    --help             # Show help for command
+]
+
+export extern "gh gist create" [
+    filename_or_stdin: string        # gist to create
+    --desc(-d): string               # A description for this gist
+    --filename(-f): string           # Provide a filename to be used when reading from standard input
+    --public(-p)                     # List the gist publicly (default: secret)
+    --web(-w)                        # Open the web browser with created gist
+    --public                         # Make the new gist public
+    --help                           # Show help for command
+]
+
+export extern "gh gist delete" [
+    gist: string@"nu-complete gist list"        # gist to delete
+    --help                           # Show help for command
+]
+
+export extern "gh gist edit" [
+    gist: string@"nu-complete gist list"        # gist to edit
+    --add(-a): string                # Add a new file to the gist
+    --desc(-d): string               # New description for the gist
+    --filename(-f): string           # Select a file to edit
+    --remove(-r): string             # Remove a file from the gist
+    --help                           # Show help for command
+]
+
+def "nu-complete gist list" [] {
+    # TODO add the name of the gist to autocompletion
+    ^gh gist list --limit 100 | lines | str replace --regex --multiline '\S+\K.*' ''
+}
+
+export extern "gh gist list" [
+    --limit(-L): number     # Maximum number of repositories to list (default 30)
+    --public                         # Show only the public gists
+    --secret                         # Show only the secret gists
+    --help                           # Show help for command
+]
+
+export extern "gh gist rename" [
+    gist: string                   # gist to rename
+    oldFilename: string            # gist to rename
+    newFilename: string            # gist to rename
+    --help                           # Show help for command
+]
+
+export extern "gh gist view" [
+    gist?: string             # gist to view
+    --filename(-f): string    # Display a single file from the gist
+    --files                   # List file names from the gist
+    --raw(-r)                 # Print raw instead of rendered gist contents
+    --web(-w)                 # Open gist in the browser
+    --help                           # Show help for command
+]
+
 def "nu-complete gh issue" [] {
     ^gh issue --help 
     | lines 
@@ -175,6 +233,36 @@ export extern "gh repo clone" [
     --help             # Show help for command
 ]
 
+def "nu-complete visibility" [] {
+    ['public', 'private', 'internal']
+}
+
+export extern "gh repo list" [
+    owner?: string          # List repos of this owner
+    --archived              # Show only archived repositories
+    --fork                  # Show only forks
+    --jq(-q):string         # Filter JSON output using a jq expression
+    --json: string          # Output JSON with the specified fields
+    --language(-l): string  # Filter by primary coding language
+    --limit(-L): number     # Maximum number of repositories to list (default 30)
+    --no-archived           # Omit archived repositories
+    --source                # Show only non-forks
+    --template(-t): string  # Format JSON output using a Go template; see "gh help formatting"
+    --topic: string         # Filter by topic
+    --visibility: string@"nu-complete visibility"   # Filter by repository visibility: {public|private|internal}
+    --help                  # Show help for command
+]
+
+export extern "gh repo view" [
+    org_repo: string       # <ORG/REPO> to view
+    --branch(-b):string    # View a specific branch of the repository
+    --jq(-q):string        # Filter JSON output using a jq expression
+    --json: string         # Output JSON with the specified fields
+    --template(-t):string  # Format JSON output using a Go template; see "gh help formatting"
+    --web                  # Open a repository in the browser
+    --help                  # Show help for command
+]
+
 def "nu-complete gitignore list" [] {
     ^gh api  -H "Accept: application/vnd.github+json"  /gitignore/templates
     | from json
@@ -187,7 +275,7 @@ def "nu-complete licenses list" [] {
 }
 
 export extern "gh repo create" [
-    repo_name: string
+    repo_name?: string
     --help                     # Show help for command
     --add-readme               # Add a README file to the new repository
     --clone(-c)                # Clone the new repository to the current directory
@@ -209,7 +297,7 @@ export extern "gh repo create" [
 ]
 
 export extern "gh repo fork" [
-    repo: string
+    repo?: string
     --clone                # Clone the fork
     --default-branch-only  # Only include the default branch in the fork
     --fork-name: string    # Rename the forked repository
@@ -440,7 +528,6 @@ export extern "gh ssh-key" [
 ]
 
 export extern "gh status" [
-    command 
     --exclude(-e)   # Comma separated list of repos to exclude in owner/name format
     --org(-o)       # Report status within an organization
     --help          # Show help for command
