@@ -253,7 +253,7 @@ let fish_completer = {|spans: list<string>|
     | from tsv --flexible --no-infer
 }
 
-let carapace_completer = { |spans: list<string>|
+let carapace_completer = {|spans: list<string>|
     carapace $spans.0 nushell ...$spans
     | from json
     | if ($in
@@ -262,7 +262,7 @@ let carapace_completer = { |spans: list<string>|
         | is-empty) { $in } else { null }
 }
 
-let external_completer = { |spans: list<string>|
+let external_completer = {|spans: list<string>|
     # if the current command is an alias, get it's expansion
     let expanded_alias = scope aliases
     | where name == $spans.0
@@ -272,7 +272,9 @@ let external_completer = { |spans: list<string>|
     let spans = if $expanded_alias != null {
         $spans
         | skip 1
-        | prepend ($expanded_alias | split row ' ' | take 1)
+        | prepend ($expanded_alias
+                | split row ' '
+                | take 1)
     } else {
         $spans
     }
@@ -344,8 +346,7 @@ $env.config = {
         try: {
             # border_color: 'red'
             # highlighted_color: 'blue'
-
-            # reactive: false
+            reactive: true
         }
 
         table: {
@@ -674,20 +675,6 @@ $env.config = {
             event: { send: menuright }
         }
         {
-            name: menu_next
-            modifier: control
-            keycode: char_n
-            mode: [vi_normal vi_insert]
-            event: { send: menunext }
-        }
-        {
-            name: menu_previous
-            modifier: control
-            keycode: char_p
-            mode: [vi_normal vi_insert]
-            event: { send: menuprevious }
-        }
-        {
             name: history_menu
             modifier: control
             keycode: char_r
@@ -696,14 +683,14 @@ $env.config = {
         }
         {
             name: next_page
-            modifier: shift_control
+            modifier: control
             keycode: char_n
             mode: [vi_normal vi_insert]
             event: { send: menupagenext }
         }
         {
             name: previous_page
-            modifier: shift_control
+            modifier: control
             keycode: char_p
             mode: [vi_normal vi_insert]
             event: { send: menupageprevious }
@@ -834,13 +821,32 @@ export use completions *
 export use utils *
 export use aliases *
 
+export use share/modules/background_task/task.nu
+
 # ─[ Section::gpg fix ]─────────────────────────────────────────────────────
 
 # to make gpg agent work correctly
 $env.GPG_TTY = (tty)
+
+# ─[ Section::LS_COLORS ]─────────────────────────────────────────────────
+$env.config = ($env.config | upsert hooks.env_change.LS_COLORS {
+    source (
+        [$nu.default-config-dir "hooks" "vivid.nu"] | path join
+    )
+})
+
+$env.config.hooks.pre_prompt = ($env.config.hooks.pre_prompt
+    | append (
+        source (
+            [$nu.default-config-dir "hooks" "overlays.nu"] | path join
+        )
+    )
+)
 
 # ─[ section::starship ]──────────────────────────────────────────────────
 
 use ~/.cache/starship/init.nu
 
 # do --env {|| bash -c eval '$(zellij setup --generate-auto-start bash)'}
+
+use '/home/ursa-major/.config/broot/launcher/nushell/br' *

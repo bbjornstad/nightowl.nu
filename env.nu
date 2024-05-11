@@ -117,21 +117,29 @@ $env.PROMPT_MULTILINE_INDICATOR = {|| }
 # Note: The conversions happen *after* config.nu is loaded
 $env.ENV_CONVERSIONS = {
     "PATH": {
-        from_string: { |s| ($s
+        from_string: {|s| ($s
         | split row (char esep)
         | path expand --no-symlink) }
-        to_string: { |v| ($v
+        to_string: {|v| ($v
         | path expand --no-symlink
         | str join (char esep)) }
     }
     "Path": {
-        from_string: { |s| ($s
+        from_string: {|s| ($s
         | split row (char esep)
         | path expand --no-symlink) }
-        to_string: { |v| ($v
+        to_string: {|v| ($v
         | path expand --no-symlink
         | str join (char esep)) }
     }
+    # "LS_COLORS": {
+    #     from_string: { |s| ($s
+    #     | split row (char esep)
+    #     ) }
+    #     to_string: { |s| ($s
+    #     | str join (char esep)
+    #     )}
+    # }
 }
 
 # ─[ Section::NUPM ]────────────────────────────────────────────────────────
@@ -156,12 +164,10 @@ $env.NU_LIB_DIRS = [
 ]
 
 # add in the specific directory that corresponds to nupm so that we can use it
-$env.NU_LIB_DIRS = ($env.NU_LIB_DIRS
-    | append (
-        [$env.NUPM_HOME "modules"]
-        | path join
-    )
-)
+$env.NU_LIB_DIRS = $env.NU_LIB_DIRS
+| append ([$env.NUPM_HOME "modules"]
+        | path join)
+
 
 # Directories to search for plugin binaries when calling register
 # By default, <nushell-config-dir>/plugins is added
@@ -172,16 +178,17 @@ $env.NU_PLUGIN_DIRS = [
 
 # add in cargo binary directory to path to allow for cargo installed pkgs to
 # show up in nushell correctly
-let cargo_bin = ([ $env.HOME, ".cargo", "bin" ] | path join)
-let coursier_bin = (
-    [$env.HOME, ".local", "share", "coursier", "bin"]
-    | path join)
-mut extra_paths = [ $cargo_bin, $coursier_bin ]
+let cargo_bin = [$env.HOME, ".cargo", "bin"]
+| path join
+let coursier_bin = [$env.HOME, ".local", "share", "coursier", "bin"]
+| path join
+let gem_bin = [$env.HOME ".local" "share" "gem" "ruby" "3.0.0" "bin"]
+| path join
 
-$extra_paths = (
-    ([$env.NUPM_HOME "scripts"] | path join)
-    | prepend $extra_paths
-)
+let script_bin = [$env.NUPM_HOME "scripts"]
+| path join
+
+let extra_paths = [$cargo_bin $coursier_bin $gem_bin $script_bin]
 
 $env.PATH = ($env.PATH | split row (char esep) | prepend $extra_paths)
 
