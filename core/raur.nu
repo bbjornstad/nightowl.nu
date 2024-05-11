@@ -8,15 +8,13 @@ export def main [] { }
 export def "raur remove" [
     --nofuzz(-f)
 ] {
-    let inp = (^paru -Qq)
+    let inp = ^paru -Qq
     let remove_targets = (if not $nofuzz {
-        ($inp
-         | ^fzf --multi --preview 'paru -Qi {1}')
+        $inp | ^fzf --multi --preview 'paru -Qi {1}'
     } else {
         $inp
     })
-    ($remove_targets
-     | ^xargs -ro paru -Rnsc)
+    $remove_targets | ^xargs -ro paru -Rnsc
 }
 
 export def "raur clean" [
@@ -25,9 +23,9 @@ export def "raur clean" [
     --review(-r)
 ] {
     if not $skip_orphans {
-        let orph = (^paru -Qtdq)
+        let orph = ^paru -Qtdq
         let remove_targets = (if $review {
-            ($orph | ^fzf --multi --preview 'paru -Qi {1}')
+            $orph | ^fzf --multi --preview 'paru -Qi {1}'
         } else {
             $orph
         })
@@ -37,20 +35,48 @@ export def "raur clean" [
     }
 }
 
+export def "raur rebuild" [
+    --no-native (-n)
+    --no-aur (-a)
+    --with-dependencies (-d)
+] {
+    let native_callargs = (if $with_dependencies {
+        "-Qqn"
+    } else { "-Qeqn" })
+    let aur_callargs = (if $with_dependencies {
+        "-Qqm"
+    } else { "-Qeqm" })
+
+    let native_pkg = (if not $no_native {
+        ^paru $native_callargs | lines
+    } else {
+        []
+    })
+    let aur_pkg = (if not $no_aur {
+        ^paru $aur_callargs | lines
+    } else {
+        []
+    })
+    if not ($native_pkg | is-empty) {
+        ^sudo pacman -S ...$native_pkg
+    }
+    if not ($aur_pkg | is-empty) {
+        ^paru -S ...$aur_pkg
+    }
+}
+
 export def --wrapped "raur install" [
     --nofuzz(-f)
     ...args
 ] {
     let inp = (^paru -Slq ...$args)
     let install_targets = (if not $nofuzz {
-        ($inp
-         | ^fzf --multi --preview 'paru -Si {1}')
+        $inp | ^fzf --multi --preview 'paru -Si {1}'
     } else {
         $inp
     })
 
-    ($install_targets |
-     | ^xargs -ro paru -Syu ...$args)
+    $install_targets | ^xargs -ro sudo paru -Syu ...$args
 }
 
 export def "raur list" [
@@ -61,12 +87,16 @@ export def "raur list" [
     --information(-i)
 ] {
     mut cmdargs = ["-Q"]
-    $cmdargs = ($cmdargs | append (if $explicit { ["-e"] } else { [] }))
-    $cmdargs = ($cmdargs | append (if $dependencies { [ "-d" ] } else { [] }))
-    $cmdargs = ($cmdargs | append (if $outdated { [ "-u" ] } else { [] }))
-    $cmdargs = ($cmdargs | append (if $ls_files { ["-l"] } else { [] }))
-    $cmdargs = ($cmdargs | append (if $information { ["-i"] } else { [] }))
+    $cmdargs = $cmdargs | append (if $explicit { ["-e"] } else { [] })
+    $cmdargs = $cmdargs | append (if $dependencies { [ "-d" ] } else { [] })
+    $cmdargs = $cmdargs | append (if $outdated { [ "-u" ] } else { [] })
+    $cmdargs = $cmdargs | append (if $ls_files { ["-l"] } else { [] })
+    $cmdargs = $cmdargs | append (if $information { ["-i"] } else { [] })
     ^paru ...$cmdargs
+}
+
+export def "raur grep" [...args] {
+    ^paru -Q | ^rg ...$args
 }
 
 export def --wrapped "raur search" [
@@ -74,9 +104,9 @@ export def --wrapped "raur search" [
     --paru-mode(-m): string="Search(AUR)"
     ...args
 ] {
-    let inp = (^paru -Slq ...$args)
+    let inp = ^paru -Slq ...$args
     let search_targets = (if not $nofuzz {
-        ($inp | ^fzf --multi --preview 'paru -Si {1}')
+        $inp | ^fzf --multi --preview 'paru -Si {1}'
     } else {
         $inp
     })
@@ -91,8 +121,7 @@ export def --wrapped "raur search" [
             }
         )
     )
-    ($inp
-     | ^xargs -ro paru ..$finargs)
+    $inp | ^xargs -ro paru ..$finargs
 }
 
 export def --wrapped "raur spec" [
@@ -104,27 +133,27 @@ export def --wrapped "raur spec" [
     --force(-f)
     ...args
 ] {
-    let file_name = ($name | default "./archpkg.txt")
-    let noforce = (not $force)
+    let file_name = $name | default "./archpkg.txt"
+    let noforce = not $force
     let baseargs = ["-Q" "-q" "-e"]
 
     let cmdargs = (if $with_dependencies {
-        ($baseargs | append ["-d"])
+        $baseargs | append ["-d"]
     } else {
         $baseargs
     })
     let repoargs = if $in_repo {
-        ($cmdargs | append ["-m"])
+        $cmdargs | append ["-m"]
     } else {
         $cmdargs
     }
     let aurargs = if $in_aur {
-        ($cmdargs | append "-n")
+        $cmdargs | append "-n"
     } else {
         $cmdargs
     }
-    let repos = ((^paru ...$repoargs) | lines)
-    let aurs = ((^paru ...$aurargs) | lines)
+    let repos = ^paru ...$repoargs | lines
+    let aurs = ^paru ...$aurargs | lines
 
     let req = { repository: $repos, aur: $aurs }
 
@@ -135,9 +164,9 @@ export def --wrapped "raur spec" [
                 return 1
             }
         }
-        ($req
+        $req
          | to text
-         | save -f $file_name)
+         | save -f $file_name
     } else {
         $req
     }
