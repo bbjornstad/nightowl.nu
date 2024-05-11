@@ -70,12 +70,12 @@ export extern keychain [
 ]
 
 export def --wrapped main [
+    ...args: string
     --agents (-a): list<string>
     --fp (-f)
     --quiet (-q)
-    ...args: string
 ] {
-    if (not $fp) {
+    if not $fp {
         (^keychain
          --agents ($agents
              | str join ",")
@@ -94,26 +94,30 @@ export def --wrapped main [
 
 export def --env import [] {
     let keyout = $in
-    ($keyout
-     | lines -s
-     | parse '{varname}={varval}; export {_}'
-     | select varname varval
-     | transpose -r
-     | into record
-     | load-env)
+    $keyout
+    | lines -s
+    | parse '{varname}={varval}; export {_}'
+    | select varname varval
+    | transpose -r
+    | into record
+    | load-env
 }
 
 export def --wrapped revoke [
+    ...args: string
     --stop (-k): string
     --keychain-home (-H): glob='~/.keychain'
     --targets (-s): string='*'
     --noclear (-c)
     --quiet (-q)
-    ...args: string
 ] {
-    if ($stop != null) or (not $noclear) {
+    if (($stop != null) or (not $noclear)) {
         let revargs = (
-                (if ($stop != null) { ['--stop' $stop] } else { [] })
+                if ($stop != null) {
+                    ['--stop' $stop]
+                } else {
+                    []
+                }
                 | append
                 (if (not $noclear) { ['--clear' ] } else { [] })
                 )
@@ -122,9 +126,12 @@ export def --wrapped revoke [
              ...$revargs
              ...$args)
     }
-    let removetarget = (glob ([$keychain_home $targets] | path join | inspect) | inspect)
-        ($removetarget
-         | par-each { |it| $it | rm $it })
+    let removetarget = glob ([$keychain_home $targets]
+            | path join
+            | inspect)
+        | inspect
+
+    $removetarget | par-each { |it| $it | rm $it }
 }
 
 export def --env to-env [
@@ -144,8 +151,8 @@ export def --env from-env [
     --gpg-name (-G): string='URSA_GPG_KEYS'
     --quiet (-q)
 ] {
-    let ssh_keys = ($env | get $ssh_name)
-    let gpg_keys = ($env | get $gpg_name)
+    let ssh_keys = $env | get $ssh_name
+    let gpg_keys = $env | get $gpg_name
 
     (keval
      --ssh-keys $ssh_keys
@@ -154,63 +161,56 @@ export def --env from-env [
 }
 
 export def --wrapped --env envid [
+    ...args: string
     --ssh (-s): string
     --gpg (-g): string
     --quiet (-q)
-    ...args: string
 ] {}
 
 export def --wrapped keval [
+    ...args: string
     --ssh-keys (-s): list<string> # ids of ssh keys to add via keychain
     --gpg-keys (-g): list<string> # ids of gpg keys to add via keychain
     --quiet (-q)
-    ...args: string
 ] {
     mut agents = []
-    let final_ssh = if $ssh_keys == null {
-        []
-    } else {
-        $ssh_keys
-    }
+    let final_ssh = $ssh_keys | default []
 
-    let final_gpg = if $gpg_keys == null {
-        []
-    } else {
-        $gpg_keys
-    }
+    let final_gpg = $gpg_keys | default []
     if not ($final_ssh | is-empty) {
-        $agents = ($agents | append "ssh")
+        $agents = $agents | append "ssh"
     }
     if not ($final_gpg | is-empty) {
-        $agents = ($agents | append "gpg")
+        $agents = $agents | append "gpg"
     }
+    let agents = $agents
 
-    (^keychain
-      --agents ($agents | str join ",")
-      (if $quiet { "--quiet" } else { '' })
-      ...$args
-      ...$final_ssh
-      ...$final_gpg)
+    (^keychain --agents ($agents
+                         | str join ",")
+     (if $quiet { "--quiet" } else { '' })
+     ...$args
+     ...$final_ssh
+     ...$final_gpg)
 }
 
 export def --env --wrapped start [
+    ...args: string
     --ssh-keys (-s): list<string>
     --gpg-keys (-g): list<string>
     --ssh-env (-S): string='URSA_SSH_KEYS'
-    --gpg-env (-S): string='URSA_GPG_KEYS'
+    --gpg-env (-G): string='URSA_GPG_KEYS'
     --from-env (-e)
     --nosystemd (-D)
     --noeval (-E)
     --quiet (-q)
-    ...args: string
 ] {
-    let host = (run-external 'uname' '-n')
-    let sshpath = ([$env.HOME, '.keychain' $"($host)-sh"] | path join)
-    let gpgpath = ([$env.HOME, '.keychain' $"($host)-sh-gpg"] | path join)
+    let host = run-external 'uname' '-n'
+    let sshpath = [$env.HOME, '.keychain' $"($host)-sh"] | path join
+    let gpgpath = [$env.HOME, '.keychain' $"($host)-sh-gpg"] | path join
     let startargs = (if not $noeval {
-        (if not $nosystemd {
+        if not $nosystemd {
             ['--systemd']
-        } else { [] })
+        } else { [] }
         | prepend ['--eval']
     } else {
         []
@@ -226,15 +226,15 @@ export def --env --wrapped start [
         }
     }
 
-    let envkeys = if $from_env {
-        (from-env --ssh-name $ssh_env --gpg-name $gpg_env)
+    let envkeys = (if $from_env {
+        from-env --ssh-name $ssh_env --gpg-name $gpg_env
     } else {
         []
-    }
+    })
     (keval
      ...$startargs
      ...$args
      (if $quiet { "--quiet" } else { '' })
-     --ssh-keys $ssh_keys
-     --gpg-keys $gpg_keys) | import
+     --ssh-keys=$ssh_keys
+     --gpg-keys=$gpg_keys) | import
 }
