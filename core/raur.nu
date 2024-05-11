@@ -29,6 +29,7 @@ export def "raur clean" [
         } else {
             $orph
         })
+        $remove_targets | ^xargs -ro sudo pacman -Rnsc
     }
     if not $skip_cache {
         run-external "paru" "-Scc"
@@ -48,7 +49,7 @@ export def "raur rebuild" [
     } else { "-Qeqm" })
 
     let native_pkg = (if not $no_native {
-        ^paru $native_callargs | lines
+        ^pacman $native_callargs | lines
     } else {
         []
     })
@@ -92,6 +93,7 @@ export def "raur list" [
     $cmdargs = $cmdargs | append (if $outdated { [ "-u" ] } else { [] })
     $cmdargs = $cmdargs | append (if $ls_files { ["-l"] } else { [] })
     $cmdargs = $cmdargs | append (if $information { ["-i"] } else { [] })
+    let cmdargs = $cmdargs
     ^paru ...$cmdargs
 }
 
